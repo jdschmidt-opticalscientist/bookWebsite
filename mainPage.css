@@ -1,6 +1,59 @@
-h1,h2,h3,p {font-family: "Arial"}
+h1,h2,h3,h4,h5,h6,p {font-family: "Arial"}
 
-div.header {background:#01013F}
-div.header h1,h2{color:#D8A001}
+a {color: #E8A001}
 
-div.text p{color:black}
+div.header {background:#01013A}
+div.header h1,h2,h3{color:#E8A001}
+
+div.text p{
+	color:black;
+}
+div.text{
+	border: 1px solid #01013A;
+	padding: 10px;
+	margin-right: 100px; /* margin for right nav box */
+}
+
+div.footer hr
+{
+	width: 80%;
+	border: 5px solid;
+	color: #E8A001;
+	border-top-color:#01013A;
+	border-top-width: 1px;
+}
+
+
+/*
+ * Right navigation box
+ 
+#right_nav_box {
+	position: absolute;
+	top: 230px;
+	right: 0px;
+	background-color: #01013A;
+	padding: 10px;
+	margin: 10px 10px 10px 10px;
+}
+*/
+#right_nav_box {
+	float: right;
+	top: 230px;
+	right: 0px;
+	background-color: #01013A;
+	padding: 10px;
+	margin: 10px 10px 10px 10px;
+}
+#right_nav_box ul {
+	font-family: Arial;
+	color: black;
+	list-style-type: none;
+	line-height: 175%;
+	margin: 10;
+	padding: 0;
+}
+
+.active{
+	background-color: white;
+	color: #01013A;
+}

@@ -16,18 +16,125 @@
 
 <body>
 	<div class="header", align="center">
-		<img src="PM199-245.jpg" width="245" height="350" align="left" alt="Numerical Simulation of Optical Wave Propagation with Examples in Matlab book cover" title="Numerical Simulation of Optical Wave Propagation with Examples in Matlab book cover">
+	<table>
+		<tr>
+		<td align="left" align="140">
+		<img src="PM199-245.jpg" width="100" align="left" alt="Numerical Simulation of Optical Wave Propagation with Examples in Matlab book cover" title="Numerical Simulation of Optical Wave Propagation with Examples in Matlab book cover">
+		</td>
+		<td align=center>
 		<h1>Chapter 3: Simple Computations Using Fourier Transforms</h1>
-
-		<br clear="all"/>
+		</td>
+		</table>
 	</div>
 
+	<!-- Vertical navigation bar on right side -->
 	<div class="text", align="left">
+		<div id="right_nav_box">
+			<ul>
+				<li><a href="index.html">Home</a>
+				<li><a href="chapter1.html">Chapter 1</a>
+				<li><a href="chapter2.html">Chapter 2</a>
+				<li><a active href="chapter3.html">Chapter 3</a>
+				<li><a href="chapter4.html">Chapter 4</a>
+				<li><a href="chapter5.html">Chapter 5</a>
+				<li><a href="chapter6.html">Chapter 6</a>
+				<li><a href="chapter7.html">Chapter 7</a>
+				<li><a href="chapter8.html">Chapter 8</a>
+				<li><a href="chapter9.html">Chapter 9</a>
+			</ul>
+		</div>
+
 		<h1>Improved Correlation Code</h1>
 
 		<p>
-		Cross-correlation is a widely used analysis tool.  Mostly, I use it for analyzing random signals that occur in optical systems that involve atmospheric turbulence.  Obviously, Section 9.5.5 in my book uses the auto-correlation of the propagated field to verify that the turbulent wave-optics simulation is operating as expected.  Other random signals like wavefront gradients, Zernike mode coefficients, and irradiance fluctuations can be analyzed with cross-correlation.  These can be 2-D spatial signals or 1-D temporal signals, depending on how they are measured.  For 1-D signals, Matlab provides the function xcorr.  I encourage everyone to read to the xcorr documentation.  It is informative, particularly regarding the various normalization options.  The 'unbiased' option is particularly relevant here, and the function corr2_ft in Section 3.2 of my book provides an analogous calculation for removing the bias of a 2-D spatial mask that occurs often in optics.
+		Cross-correlation is a widely used analysis tool.  Mostly, I use it for analyzing random signals that occur in optical systems collecting data through atmospheric turbulence.  For example, Section 9.5.5 in my book uses the auto-correlation of the propagated field to verify that the turbulent wave-optics simulation is operating as expected.  Other random signals like wavefront gradients, Zernike mode coefficients, and irradiance fluctuations can be analyzed with cross-correlation.  These can be 2-D spatial signals or 1-D temporal signals, depending on how they are measured.  For 1-D signals, Matlab provides the function xcorr.  I encourage everyone to read to the xcorr documentation.  It is informative, particularly regarding the various normalization options.  The 'unbiased' option is particularly relevant here, and the function corr2_ft in Section 3.2 of my book provides an analogous calculation for removing the bias of a 2-D spatial mask that occurs often in optics.
 		</p>
+		
+		<h2>Some Statistical Definitions</h2>
+		<p>
+		Ensemble averages (also called <i>expected values</i>) of a random process are defined as
+		\[
+			\left\langle f\left(u\right) \right\rangle = \int\limits_{-\infty}^{\infty} f\left(u\right) p\left(u\right) \, d u,
+		\]
+		where \(u\) is the random variable, \(p\left(u\right)\) is its probability density function (PDF), and \(f\left(u\right)\) is an arbitrary function of \(u\). For example, the mean and mean-square value of \(u\) are given by
+		\[
+			\mu_u = \left\langle u \right\rangle = \int\limits_{-\infty}^{\infty} u \, p\left(u\right) \, d u
+		\]
+		and
+		\[
+			\left\langle u^2 \right\rangle = \int\limits_{-\infty}^{\infty} u^2 \, p\left(u\right) \, d u,
+		\]
+		respectively. We can combine these to compute variance \(\sigma_u^2\), given by
+		\[
+			\sigma_u^2 = \left\langle \left(u - \left\langle u \right\rangle \right)^2 \right\rangle.
+		\]
+		These are called <i>point statistics</i>.
+		</p>
+		
+		<p>
+		If we have two random variables \(u\) and \(v\) described by a <i>joint PDF</i> \(p\left(u,v\right)\), we can describe how they are related on average by their <i>correlation</i>, defined as
+		\[
+			\Gamma_{uv} = \left\langle u v \right\rangle = \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} u v \, p\left(u,v\right) \, d u \, dv.
+		\]
+		A similar measure of this relationship between \(u\) and \(v\) is the <i>covariance</i> \(C_{uv} = \Gamma_{uv} - \left\langle u \right\rangle \left\langle v \right\rangle \). Finally, we define the <i>correlation coefficient</i> \( \rho_{uv} = \Gamma_{uv} / \left( \left\langle u \right\rangle \left\langle v \right\rangle \right) \). When \(v = u \), these are called the <i>autocorrelation</i> and <i>autocovariance</i>, respectively.
+		</p>
+		
+		<h2>Temporal Random Processes</h2>
+		<p>
+		<i>Random processes</i> are random variables that evolve over time, like \(u\left(t\right)\) and \(v\left(t\right)\). In general, the PDF and expected values are functions of time, e.g.,
+		\[
+			\mu_u\left(t\right) = \left\langle u\left(t\right) \right\rangle = \int\limits_{-\infty}^{\infty} u\left(t\right) \, p\left(u, t\right) \, du,
+		\]
+		\[
+			\left\langle u^2\left(t\right) \right\rangle = \int\limits_{-\infty}^{\infty} u^2\left(t\right) \, p\left(u, t\right) \, du,
+		\]
+		and
+		\[
+			\sigma_u^2 = \left\langle \left(u - \left\langle u \right\rangle \right)^2 \right\rangle.
+		\]
+
+		Statistical correlation of a random process involves averages at two different moments in time, \(t_1\) and \(t_2\). <i>Temporal correlation</i> is a good example:
+		\[
+		   \Gamma_{uv}\left(t_1,t_2\right) = \left\langle u\left(t_1\right) v\left(t_2\right) \right\rangle = \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} u\left(t_1\right) v\left(t_2\right) \, p\left[u\left(t_1\right),v\left(t_2\right)\right] \, d u\left(t_1\right) \, d v\left(t_2\right).
+		\]
+		 
+		Also, we have the temporal covariance \( C_{uv}\left(t_1,t_2\right) = \Gamma_{uv}\left(t_1,t_2\right) - \left\langle u\left(t_1\right) \right\rangle \left\langle v\left(t_2\right)\right\rangle \). Also, there is another statistic that appears in optical turbulence often, called the structure function \( D_u\left(t_1,t_2\right) \). Generally, it involves only one process, and it is defined as
+		\[
+			D_u\left(t_1,t_2\right) = \left\langle \left[ u\left(t_1\right) - u\left(t_2\right) \right]^2 \right\rangle.
+		\]
+		
+		<h2>Stationarity and Ergodicity</h2>
+		<p>
+		Stationarity increments, WSS, SSS, and ergodicity for random processes
+		</p>
+		
+		<h2>Spatial Random Fields</h2>
+		<p>
+		<i>Random fields</i> are random variables that are a function of the position in space, \( \mathbf{r} \). In general, the ensemble average values are a function of position, and their definitions are very similar to the corrsponding definitions for temporal random processes, e.g.,
+		\[
+			\mu_u = \left\langle u \right\rangle = \int\limits_{-\infty}^{\infty} u \, p\left(u\right) \, d u
+		\]
+		\[
+			\left\langle u^2 \right\rangle = \int\limits_{-\infty}^{\infty} u^2 \, p\left(u\right) \, d u,
+		\]
+		\[
+			\sigma_u^2 = \left\langle \left(u - \left\langle u \right\rangle \right)^2 \right\rangle.
+		\]
+		\[
+		   \Gamma_{uv}\left(t_1,t_2\right) = \left\langle u\left(t_1\right) v\left(t_2\right) \right\rangle = \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} u\left(t_1\right) v\left(t_2\right) \, p\left[u\left(t_1\right),v\left(t_2\right)\right] \, d u\left(t_1\right) \, d v\left(t_2\right).
+		\]
+		\[
+			D_u\left(t_1,t_2\right) = \left\langle \left[ u\left(t_1\right) - u\left(t_2\right) \right]^2 \right\rangle.
+		\]
+		</p>
+		
+		<h2>Special Random Fields</h2>
+		<p>
+		Statistical homogeneity and isotropy for random fields
+		</p>
+		
+		
+		<h2>Correlation Integral with Window Functions</h2>
 
 		<p>
 		In the years since I wrote the book, I have had many occasions to use the function corr2_ft.  Unfortunately, there is a better way to handle the mask of the output from this function.  Here, I elaborate on the details of correlation with masked data, provide an improved function to compute 2-D correlation, and show a couple of example.
@@ -90,5 +197,11 @@
 		</p>
 	</div>
 
-	</body>
+	<div class="footer", align="center">
+		<br/>
+		<hr/>
+		<a href="index.html">Home</a> | <a href="aboutBook.html">About</a>
+	</div>
+
+</body>
 </html>

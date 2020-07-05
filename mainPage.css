@@ -26,6 +26,10 @@ div.toc ul{
 	list-style-type: none;
 }
 
+div.toc li{
+	margin: 0.5em 0px;
+}
+
 div.text p{
 	color: black;
 	text-align: left;

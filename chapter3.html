@@ -15,11 +15,11 @@
 </head>
 
 <body>
-	<div class="header", align="center">
+	<div class="header">
 	<table>
 		<tr>
 		<td align="left" align="140">
-		<img src="PM199-245.jpg" width="100" align="left" alt="Numerical Simulation of Optical Wave Propagation with Examples in Matlab book cover" title="Numerical Simulation of Optical Wave Propagation with Examples in Matlab book cover">
+			<img class="bookImg" src="PM199-245.jpg" />
 		</td>
 		<td align=center>
 		<h1>Chapter 3: Simple Computations Using Fourier Transforms</h1>
@@ -28,7 +28,7 @@
 	</div>
 
 	<!-- Vertical navigation bar on right side -->
-	<div class="text", align="left">
+	<div class="text">
 		<div id="right_nav_box">
 			<ul>
 				<li><a href="index.html">Home</a>
@@ -56,7 +56,7 @@
 		\[
 			\left\langle f\left(u\right) \right\rangle = \int\limits_{-\infty}^{\infty} f\left(u\right) p\left(u\right) \, d u,
 		\]
-		where \(u\) is the random variable, \(p\left(u\right)\) is its probability density function (PDF), and \(f\left(u\right)\) is an arbitrary function of \(u\). For example, the mean and mean-square value of \(u\) are given by
+		where \(u\) is the random variable, \(p\left(u\right)\) is its probability density function (<abbr title = "Probability Density Function">PDF</abbr>), and \(f\left(u\right)\) is an arbitrary function of \(u\). For example, the mean and mean-square value of \(u\) are given by
 		\[
 			\mu_u = \left\langle u \right\rangle = \int\limits_{-\infty}^{\infty} u \, p\left(u\right) \, d u
 		\]
@@ -72,7 +72,7 @@
 		</p>
 		
 		<p>
-		If we have two random variables \(u\) and \(v\) described by a <i>joint PDF</i> \(p\left(u,v\right)\), we can describe how they are related on average by their <i>correlation</i>, defined as
+		If we have two random variables \(u\) and \(v\) described by a <i>joint <abbr title = "Probability Density Function">PDF</abbr></i> \(p\left(u,v\right)\), we can describe how they are related on average by their <i>correlation</i>, defined as
 		\[
 			\Gamma_{uv} = \left\langle u v \right\rangle = \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} u v \, p\left(u,v\right) \, d u \, dv.
 		\]
@@ -81,7 +81,7 @@
 		
 		<h2>Temporal Random Processes</h2>
 		<p>
-		<i>Random processes</i> are random variables that evolve over time, like \(u\left(t\right)\) and \(v\left(t\right)\). In general, the PDF and expected values are functions of time, e.g.,
+		<i>Random processes</i> are random variables that evolve over time, like \(u\left(t\right)\) and \(v\left(t\right)\). In general, the <abbr title = "Probability Density Function">PDF</abbr> and expected values are functions of time, e.g.,
 		\[
 			\mu_u\left(t\right) = \left\langle u\left(t\right) \right\rangle = \int\limits_{-\infty}^{\infty} u\left(t\right) \, p\left(u, t\right) \, du,
 		\]
@@ -105,7 +105,7 @@
 		
 		<h2>Stationarity and Ergodicity</h2>
 		<p>
-		Stationarity increments, WSS, SSS, and ergodicity for random processes
+		Stationarity increments, <abbr title = "Wide Sense Stationary">WSS</abbr>, <abbr title = "Strict Sense Stationary">SSS</abbr>, and ergodicity for random processes
 		</p>
 		
 		<h2>Spatial Random Fields</h2>
@@ -197,7 +197,7 @@
 		</p>
 	</div>
 
-	<div class="footer", align="center">
+	<div class="footer">
 		<br/>
 		<hr/>
 		<a href="index.html">Home</a> | <a href="aboutBook.html">About</a>

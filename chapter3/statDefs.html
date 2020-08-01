@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="../mainPage.css" />
+
+	<title>Chapter 3: Simple Computations Using Fourier Transforms</title>
+
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</head>
+
+<body>
+	<div class="header">
+	<table>
+		<tr>
+		<td align="left" align="140">
+			<img class="bookImg" src="../PM199-245.jpg" />
+		</td>
+		<td align=center>
+		<h1>Chapter 3: Simple Computations Using Fourier Transforms</h1>
+		</td>
+		</table>
+	</div>
+
+	<div class="text">
+		<!-- Vertical navigation bar on right side -->
+		<div id="right_nav_box">
+			<ul>
+				<li><a href="../index.html">Home</a>
+				<li><a href="../chapter1/index.html">Chapter 1</a>
+				<li><a href="../chapter2/index.html">Chapter 2</a>
+				<li><a href="../chapter3/index.html">Chapter 3</a>
+				<li><a href="../chapter4/index.html">Chapter 4</a>
+				<li><a href="../chapter5/index.html">Chapter 5</a>
+				<li><a href="../chapter6/index.html">Chapter 6</a>
+				<li><a href="../chapter7/index.html">Chapter 7</a>
+				<li><a href="../chapter8/index.html">Chapter 8</a>
+				<li><a href="../chapter9/index.html">Chapter 9</a>
+			</ul>
+		</div>
+
+		<h1>Some Statistical Definitions</h1>
+		<p>
+		<dfn>Ensemble averages</dfn> (also called <dfn>expected values</dfn>) of a random process are defined as
+		\[
+			\left\langle f\left(u\right) \right\rangle = \int\limits_{-\infty}^{\infty} f\left(u\right) p\left(u\right) \, d u,
+		\]
+		where \(u\) is the random variable, \(p\left(u\right)\) is its probability density function (<abbr title = "Probability Density Function">PDF</abbr>), and \(f\left(u\right)\) is an arbitrary function of \(u\). For example, the mean and mean-square value of \(u\) are given by
+		\[
+			\mu_u = \left\langle u \right\rangle = \int\limits_{-\infty}^{\infty} u \, p\left(u\right) \, d u
+		\]
+		and
+		\[
+			\left\langle u^2 \right\rangle = \int\limits_{-\infty}^{\infty} u^2 \, p\left(u\right) \, d u,
+		\]
+		respectively. We can combine these to compute variance \(\sigma_u^2\), given by
+		\[
+			\sigma_u^2 = \left\langle \left(u - \left\langle u \right\rangle \right)^2 \right\rangle.
+		\]
+		These are called <dfn>point statistics</dfn>.
+		</p>
+		
+		<p>
+		If we have two random variables \(u\) and \(v\) described by a <i>joint <abbr title = "Probability Density Function">PDF</abbr></i> \(p\left(u,v\right)\), we can describe how they are related on average by their <dfn>correlation</dfn>, defined as
+		\[
+			\Gamma_{uv} = \left\langle u v \right\rangle = \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} u v \, p\left(u,v\right) \, d u \, dv.
+		\]
+		A similar measure of this relationship between \(u\) and \(v\) is the <dfn>covariance</dfn> \(C_{uv} = \Gamma_{uv} - \left\langle u \right\rangle \left\langle v \right\rangle \). Finally, we define the <dfn>correlation coefficient</dfn> \( \rho_{uv} = \Gamma_{uv} / \left( \left\langle u \right\rangle \left\langle v \right\rangle \right) \). When \(v = u \), these are called the <dfn>autocorrelation</dfn> and <dfn>autocovariance</dfn>, respectively.
+		</p>
+		
+		<h2>Temporal Random Processes</h2>
+		<p>
+		<dfn>Random processes</dfn> are random variables that evolve over time, like \(u\left(t\right)\) and \(v\left(t\right)\). In general, the <abbr title = "Probability Density Function">PDF</abbr> and expected values are functions of time, e.g.,
+		\[
+			\mu_u\left(t\right) = \left\langle u\left(t\right) \right\rangle = \int\limits_{-\infty}^{\infty} u\left(t\right) \, p\left(u, t\right) \, du,
+		\]
+		\[
+			\left\langle u^2\left(t\right) \right\rangle = \int\limits_{-\infty}^{\infty} u^2\left(t\right) \, p\left(u, t\right) \, du,
+		\]
+		and
+		\[
+			\sigma_u^2\left(t\right) = \left\langle \left[u\left(t\right) - \left\langle u\left(t\right) \right\rangle \right]^2 \right\rangle.
+		\]
+
+		Statistical correlation of a random process involves averages at two different moments in time, \(t_1\) and \(t_2\). <dfn>Temporal correlation</dfn> is a good example:
+		\[
+		   \Gamma_{u}\left(t_1,t_2\right) = \left\langle u\left(t_1\right) \left(t_2\right) \right\rangle = \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} u\left(t_1\right) u\left(t_2\right) \, p\left[u\left(t_1\right),\left(t_2\right)\right] \, d u\left(t_1\right) \, d u\left(t_2\right).
+		\]
+		
+		<b>Define C in terms of mean-removed correlation</b>
+		
+		We have the closely-related <dfn>temporal covariance</dfn> \( C_{u}\left(t_1,t_2\right) = \Gamma_{u}\left(t_1,t_2\right) - \left\langle u\left(t_1\right) \right\rangle \left\langle u\left(t_2\right)\right\rangle \). Also, there is another statistic that appears in optical turbulence often, called the structure function \( D_u\left(t_1,t_2\right) \). Generally, it involves only one process, and it is defined as
+		\[
+			D_u\left(t_1,t_2\right) = \left\langle \left[ u\left(t_1\right) - u\left(t_2\right) \right]^2 \right\rangle.
+		\]
+		
+		<h2>Ergodicity and Stationarity</h2>
+		
+		<p>
+		There are a few important categories of random processes. These are <abbr title = "Wide Sense Stationary">WSS</abbr>, <abbr title = "Strict Sense Stationary">SSS</abbr>, ergodic, and stationary increments. Processes with these restrictions apply to many physical phenomena and are useful for their mathematical tractibility.
+		</p>
+		
+		<p>
+		<dfn>Ergodicity</dfn> is the most restrictive property and has the most useful of mathematical properties. For ergodic processes, <i>ensemble</i> averages of ergodic processes are equal to their <i>time</i> averages. We write the <dfn>time average</dfn> as
+		$$
+			\overline{f\left[u\left(t\right)\right]} = \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} f\left[u\left(t\right)\right] \, dt.
+		$$
+		Ergodicity is written mathematically as
+		\[
+			\left\langle f\left[u\left(t\right)\right] \right\rangle = \overline{f\left[u\left(t\right)\right]}.
+		\]
+		</p>
+		
+		<p>
+		<dfn><abbr title = "Strict Sense Stationary">SSS</abbr></dfn> processes satisfy a slightly less restrictive criterion. In this case, the \(N^{th}\)-order <abbr title = "Probability Density Function">PDF</abbr> is independent of time origin for all \(N\). Thus, we write this as
+		\[
+			p\left(u_1, u_2, \ldots, u_N; t_1, t_2, \ldots, t_N\right) = p\left(u_1, u_2, \ldots, u_N; t_1-T, t_2-T, \ldots, t_N-T\right)
+		\]
+		for all \(T\). As simple examples, a first-order <abbr title = "Probability Density Function">PDF</abbr> is independent of time altogether, i.e., \( p\left(u\right) \), and a second-order <abbr title = "Probability Density Function">PDF</abbr> depends only on a time difference, i.e., \( p\left(u_1,u_2;\tau\right) \), where \( \tau=t_2-t_1 \).
+		</p>
+		
+		<p>
+		<dfn><abbr title = "Wide Sense Stationary">WSS</abbr></dfn> processes are slightly less restrictive than <abbr title = "Strict Sense Stationary">SSS</abbr> processes and have two key properties. First, the variance is independent of time such that
+		\[
+			\sigma_u^2\left(t\right) = \sigma_u^2.
+		\]
+		Second, the correlation depends only on the time difference \(\tau = t_2 - t_1\) such that
+		\[
+			\Gamma_{u}\left(t_1,t_2\right) = \Gamma_{u}\left(\tau\right)
+		\]
+		and
+		\[
+			C_{u}\left(t_1,t_2\right) = \Gamma_{u}\left(\tau\right) - \mu_u^2.
+		\]
+		<b>Is the mean constant for WSS or SSS?</b>
+		</p>
+		
+		<p>
+		Finally, <dfn>stationary increments</dfn> is the least restrictive category discussed here. In this case, we can define a new process from \( u\left(t\right) \) such that
+		\[
+			v\left(t_1, t_2\right) = u\left(t_2\right) - u\left(t_1\right).
+		\]
+		If \( v\left(t_1, t_2\right) \) is <abbr title = "Strict Sense Stationary">SSS</abbr>, we say that \( u\left(t_2\right) \) has <i>stationary increments</i>. When we encounter a random process that is not <abbr title = "Wide Sense Stationary">WSS</abbr>, the structure function can be a useful and more appropriate way of characterizing a process than the correlation.
+		</p>
+		
+		<h2>Random Fields</h2>
+		<p>
+		<dfn>Random fields</dfn> are random variables that are a function of the position in space, \( \mathbf{r} \) and sometimes time. In general, the ensemble average values are a function of <i>position and time</i>, and their definitions are very similar to the corresponding definitions for temporal random processes, e.g.,
+		$$
+		\begin{align}
+			\mu_u\left(\mathbf{r},t\right) &= \left\langle u\left(\mathbf{r},t\right) \right\rangle = \int\limits_{-\infty}^{\infty} u\left(\mathbf{r},t\right) \, p\left(u,\mathbf{r},t\right) \, d u,\\
+
+			&\left\langle u^2\left(\mathbf{r},t\right) \right\rangle = \int\limits_{-\infty}^{\infty} u^2\left(\mathbf{r},t\right) \, p\left(u,\mathbf{r},t\right) \, d u,\\
+			
+			\sigma_u^2\left(\mathbf{r},t\right) &= \left\langle \left[u\left(\mathbf{r},t\right) - \left\langle u\left(\mathbf{r},t\right) \right\rangle \right]^2 \right\rangle,\\
+
+		   \Gamma_{u}\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) &= \left\langle u\left(\mathbf{r}_1,t_1\right) u\left(\mathbf{r}_2,t_2\right) \right\rangle \\
+		   &\qquad = \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} u\left(\mathbf{r}_1,t_1\right) u\left(\mathbf{r}_2,t_2\right) \, p\left[u\left(\mathbf{r}_1,t_1\right), u\left(\mathbf{r}_2,t_2\right)\right] \, d u\left(\mathbf{r}_1,t_1\right) \, d u\left(\mathbf{r}_2,t_2\right),\\
+		   
+		   C_{u}\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) &= \Gamma_{u}\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) - \left\langle u\left(\mathbf{r}_1,t_1\right) \right\rangle \left\langle u\left(\mathbf{r}_2,t_2\right)\right\rangle \\
+
+			D_u\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) &= \left\langle \left[ u\left(\mathbf{r}_1,t_1\right) - u\left(\mathbf{r}_2,t_2\right) \right]^2 \right\rangle.
+		\end{align}
+		$$
+		</p>
+		
+		<h2>Homogeneity and Isotropy</h2>
+		<p>
+		When a random field is stationary in 2-D or 3-D space, it is called <dfn>homogeneous</dfn>.
+		
+		Andrews writes this as spatially constant mean and covariance depends on only shift.
+		
+		Isotropic if moment does not depend on direction, just the magnitude.
+		</p>
+		
+		
+		<h2>References</h2>
+		<ol>
+			<li>Joseph W. Goodman, <u>Statistical Optics</u> Ch. 3, Wiley, New York, NY (1985)</li>
+			<li>Larry C. Andrews and Ronald L. Phillips, <u>Laser Beam Propagation through Random Media</u>, 2nd Ed., SPIE Press, Bellingham, WA (2005)</li>
+		</ol>
+		
+	</div>
+
+	<div class="footer">
+		<br/>
+		<hr/>
+		<a href="../index.html">Home</a> | <a href="../aboutBook.html">About</a>
+	</div>
+
+</body>
+</html>

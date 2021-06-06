@@ -1,16 +1,27 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+	<link rel="stylesheet" type="text/css" href="../matlab.css" /> 	  
 	<link rel="stylesheet" type="text/css" href="../mainPage.css" />
 
 	<title>Chapter 3: Simple Computations Using Fourier Transforms</title>
 
 	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+	
+	<script>
+		window.MathJax = {
+		  tex: {
+			tags: 'ams'
+		  }
+		};
+	</script>
 
 </head>
 
@@ -48,64 +59,330 @@
 		<h1>Correlation Integral with Window Functions</h1>
 
 		<p>
-		In the years since I wrote the book, I have had many occasions to use the function corr2_ft.  Unfortunately, there is a better way to handle the mask of the output from this function.  Here, I elaborate on the details of correlation with masked data, provide an improved function to compute 2-D correlation, and show a couple of example.
+		This article explains one step in the process of computing an unbiased correlation/covariance of a 2-D random process. The discussion here builds a concept that is used for explaining the <span class="code">corr2_ft_new</span> that replaces the <span class="code">corr2_ft</span> function in the book. I cover temporal and spatial covariance in <a href="statDefs.html">Some Statistical Definitions</a>, which are important concepts in optical turbulence. In experiments with ergodic random processes, we typically compute the covariance of that process by spatially integrating over a finite-sized window. This window might be a circular-shaped field of view in an image or a circular/annular telescope pupil on a wavefront sensor. Usually, these data are collected on a rectangular camera and analyzed in a computer as 2-D arrays of numbers. The window shape affects the region of integration, and we must properly account for it.
+		</p>
+		
+		<p>
+		The book is mostly concerned with 2-D functions, like optical images or phase in a pupil. Below, I start with 1-D functions to illustrate the math and concepts in a simpler context. Then, I move up to two dimensions. I do this below for both continuous and discrete windows.
+		</p>
+		
+		<h2>Continuous 1-D Correlation of Window Functions</h2>
+		<p>
+		The time-average correlation of a <abbr title = "Wide Sense Stationary">WSS</abbr> random process is given by
+		$$
+		\begin{equation}
+			\Gamma_u\left(\tau\right) = \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} u\left(t\right) u\left(t-\tau\right) \, \textrm{d}t,
+		\end{equation}
+		$$
+		where \(u\left(t\right)\) is the random process, \(t\) is time, \(\tau\) is a time difference (also called time lag). I refer to a <i>window</i> function as a function that has only two values, 1 and 0, and covers a finite duration. In our context, it multiplies a random process to indicate valid times. For example, \(W\left(t\right) = \textrm{rect}\left(\frac{t}{T}\right)\) is nonzero for \( \left\vert t \right\vert < T/2 \).  Strictly speaking, the rect function takes on a value of 1/2 when \(t = \pm T/2\), but often, that property can be ignored. The presence of the rect function might indicate the time period for a which a sensor was on and made a measurement of a random process.
+		</p>
+		
+		<p>
+		This article is not concerned with evaluating the integral for random processes. Instead, that topic is addressed in <a href="corrCode.html">Improved Correlation Code</a>. When the integrand is the product of two window functions, the correlation integral has interesting properties, beginning with
+		$$
+		\begin{align}
+			\Gamma_w\left(\tau\right) &= \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} W\left(t\right) W\left(t-\tau\right) \, \textrm{d}t \\
+			&= \int\limits_{-\infty}^{\infty} W\left(t\right) W\left(t-\tau\right) \, \textrm{d}t
+		\end{align}
+		$$
+		since the window function \(W\left(t\right)\) is nonzero over a finite time period. Also, this can be evaluated using Fourier transforms according to
+		$$
+		\Gamma_w\left(\tau\right) = \mathcal{F}^{-1} \left\{ \left\vert
+		\mathcal{F}\left\{W\left(t\right)\right\} \right\vert^2 \right\}.
+		$$
+		</p>
+		
+		<p>
+		For the case of zero time lag,
+		$$
+		\begin{align}
+			\Gamma_w\left(0\right) &= \int\limits_{-\infty}^{\infty} W^2\left(t\right) \, \textrm{d}t \\
+			&= \int\limits_{-\infty}^{\infty} W\left(t\right) \, \textrm{d}t \\
+			&\equiv T_W,
+		\end{align}
+		$$
+		where \(T_W\) is the total time period over which the window function is equal to \(1\). If \(W\left(t\right)\) represents the period that a sensor was on, \(T_W\) is the total period of the data collection.
+		</p>
+		
+		<p>
+		A simple example is
+		$$
+		\begin{align}
+			W\left(t\right) &= \mathrm{rect}\left(\frac{t}{T_W}\right) \\
+			\Gamma_w\left(\tau\right) &= \int\limits_{-\infty}^{\infty} \mathrm{rect}\left(\frac{t}{T_W}\right) \mathrm{rect}\left(\frac{t-\tau}{T_W}\right) \, \textrm{d}t \\
+			&= T_W \mathbf{tri}\left(\frac{\tau}{T_W}\right).
+		\end{align}
+		$$
+		In evaluating the integral, I have taken advantage of the fact that \(W^2\left(t\right) = W\left(t\right)\) because it takes only values of 1 or 0. When \(\tau=0\), \(\mathbf{tri}\left(0\right) = 1\) so that \(\Gamma_w\left(\tau\right) = T_W\). This makes intuitive sense from the "slide and multiply" interpretation of this correlation integral. When \(\left\vert \tau \right\vert > T_W/2\), the two rect functions do not overlap, so their product is 0, and so the integral evaluates to 0. Conversely, when \(\left\vert \tau \right\vert < T_W/2\), the two functions overlap, so their product is 1, and the integral is equal to the length of their overlap. When the time lag is zero, they overlap completely, so the product integrates to \(T_W\).
 		</p>
 
 		<h2>Continuous 2-D Correlation of Window Functions</h2>
 		<p>
-		The continuous cross-correlation of two 2-D signals is given by<br/>
-		\[
-			C(\mathbf{r})=\int U_1 (\mathbf{s}) U_2 (\mathbf{r}-\mathbf{s}) \, \textrm{d}\mathbf{s}
-		\]
-		The limits of integration extend to +/- infinity.
-		</p>
-		<p>
-		Regarding masks, there are a few interesting properties of this integral.  In this context, the term "mask" refers to a function whose value is 1 inside a given region of 2-D space and 0 elsewhere.  One important property is the auto-correlation's value at \(r = 0\).  Let's use \(W(r) = W(x,y)\) to denote a mask function and evaluate its auto-correlation's value at \(r = 0\), given by
-		\[
-			C(\mathbf{r}=\mathbf{0})=\int W (\mathbf{s}) W (\mathbf{s}) \, \textrm{d}\mathbf{s} = \int W (\mathbf{s}) \, \textrm{d}\mathbf{s} = A
-		\]
+		The 1-D case generalizes to 2-D easily. The time-average correlation of two <abbr title = "Wide Sense Stationary">WSS</abbr> 2-D signals is given by
+		$$
+		\begin{equation}
+			\Gamma_u(\mathbf{\Delta r})=\int u (\mathbf{r}) u (\mathbf{r}-\mathbf{\Delta r}) \, \textrm{d}\mathbf{r},
+		\end{equation}$$
+		where the limits of integration extend to \(\pm\infty\) in both \(\mathbf{r}\) coordinates. The 2-D case has the same interesting properties as the 1-D case above. In 2-D, a window function (sometimes called a mask in 2-D) has a value of 1 inside a finite region of 2-D space and 0 elsewhere. In optics, this might describe the transmittance of an aberration-free aperture. 
 		</p>
 		
 		<p>
-		Note that \(W(s) W(s) = W(s)\) because \(W(s) = 1\) within the mask region, and \(A\) is the area of the mask.  This property was used in Section 3.2 of my book to remove the effect of the mask and isolate the cross-correlation of the two signals.
-
-		At this point, I consider a couple of well-known examples.  After the examples, I cover properties of discrete cross-correlation and then provide Matlab examples.  The first example is a square mask given by
-		\[
-			W(x,y)= \textrm{rect}\left(\frac{x}{D}\right) \textrm{rect}\left(\frac{y}{D}\right).
-		\]
-		Note that in my book, \(D\) is the full width of the rect function, and its area is \(D^2\).  This mask's auto-correlation is given by
-		\[
-			C(x,y) = \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} W(x^{\prime},y^{\prime}) W(x-x^{\prime},y-y^{\prime})  \, \textrm{d}x^{\prime} \textrm{d}y^{\prime}
- 		\]
-		\[
-			C(x,y) = D^2 \textrm{tri} \left(\frac{x}{D}\right) \textrm{tri} \left(\frac{y}{D}\right)
-		\]
-		Its peak occurs at x=0, y=0.  This peak value is D^2, which is equal to the area of the mask.  Also, note the mask has nonzero values for  -D/2 < x < D/2 and -D/2 < y < D/2, while the mask's auto-correlation has nonzero values for -D < x < D and -D < y < D.  These two properties of the peak value and nonzero region are fairly general for the auto-correlation of mask functions.
+		Let's use \(W(\mathbf{r}) = W(x,y)\) to denote a spatial window.
+		Like above, a window's auto-correlation can be evaluated using Fourier transforms according to
+		$$
+		\Gamma_w\left(\mathbf{\Delta r}\right) = \mathcal{F}^{-1} \left\{ \left\vert
+		\mathcal{F}\left\{W\left(\mathbf{r}\right)\right\} \right\vert^2 \right\}.
+		$$
 		</p>
+		
 		<p>
-		As a second example, I consider a circular mask function, given by
-		\[
-			W(\mathbf{r}) = \textrm{circ}\left(\frac{r}{D}\right)
-		\]
-		Its auto-correlation is given by
-		\[
-			C(\mathbf{r})= \frac{\pi D^2}{4} \frac{2}{\pi} \left[\cos^{-1}\left(\frac{r}{D}\right) - \left(\frac{r}{D}\right) \sqrt{1-\left(\frac{r}{D}\right)^2}\right]
-		\]
-		Its peak value occurs at r = 0 and is equal to pi*D^2/4, which is the area of the circular mask.  The mask has nonzero values for 0 < r < D/2, and its auto-correlation has nonzero values for 0 < r < D.
+		At this point, we can calculate the correlation's value at \(\mathbf{r} = \mathbf{0}\), given by
+		$$\begin{equation}
+			\Gamma_w(\mathbf{\Delta r}=\mathbf{0})=\int W (\mathbf{r}) W (\mathbf{r}) \, \textrm{d}\mathbf{r} = \int W (\mathbf{r}) \, \textrm{d}\mathbf{r} = A,
+		\end{equation}$$
+		where \(A\) is the area of the window.  This property was used in Section 3.2 of the book to remove the effect of the window and isolate the cross-correlation of two signals in the function <span class="code">corr2_ft</span>.
+		</p>
+		
+		<p>
+		Again, I demonstrate with a couple of well-known examples.  After the examples, I cover properties of discrete cross-correlation and then provide Matlab examples.  The first example is a square window given by
+		$$\begin{equation}
+			W(x,y)= \textrm{rect}\left(\frac{x}{D}\right) \textrm{rect}\left(\frac{y}{D}\right).
+		\end{equation}$$
+		Note that in the book, \(D\) is the full width of the rect function, and its area is \(D^2\).  This window's correlation is given by
+		$$
+		\begin{align}
+			\Gamma_W(\Delta x, \Delta y) &= \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} W(x,y) W(x-\Delta x, y-\Delta y)  \, \textrm{d}x \textrm{d}y \\
+			&= D^2 \textrm{tri} \left(\frac{\Delta x}{D}\right) \textrm{tri} \left(\frac{\Delta y}{D}\right).
+		\end{align}
+		$$
+		Its peak occurs at \(\Delta x=0, \Delta y=0\).  This peak value is \(D^2\), which is equal to the area of the window.  Also, note the window has nonzero values for the region \(-D/2 < x < D/2\) and \(-D/2 < y < D/2\), while the window's auto-correlation has nonzero values for \(-D < x < D\) and \(-D < y < D\).  These two properties of the peak value and nonzero region are fairly general for the auto-correlation of window functions.
+		</p>
+		
+		<p>
+		As a second 2-D example, I consider a circular window function, given by
+		$$\begin{equation}
+			W(\mathbf{r}) = \textrm{circ}\left(\frac{r}{D}\right).
+		\end{equation}$$
+		Its correlation is given by
+		$$\begin{equation}
+			\Gamma_W(\mathbf{r})= \frac{\pi D^2}{4} \frac{2}{\pi} \left[\cos^{-1}\left(\frac{r}{D}\right) - \left(\frac{r}{D}\right) \sqrt{1-\left(\frac{r}{D}\right)^2}\right].
+		\end{equation}$$
+		The peak value occurs at \(\mathbf{r} = \mathbf{0}\) and is equal to \(\pi D^2/4\), which is the area of the circular window.  The window has nonzero values for \(0 < r < D/2\), and its auto-correlation has nonzero values for \(0 < r < D\).
+		</p>
+		
+		<h2>Discrete Correlation of 1-D Window Functions</h2>
+		<p>
+		In the book, I try to use continuous functions as much as possible.  At some point, though, it is necessary to analyze the discrete calculations that actually occur in computers. In this case, we have an array of random variables \(u_n\), where \(n\) is the integer time index, the time between successive samples is \(\Delta t\), and the discrete time values are \(t_n = n \Delta t\). There are various conventions for the range of index \(n\), like \(0\) to \(N-1\) and \(-N/2\) to \(N/2-1\), where \(N\) is the number of samples in array \(u_n\). Because I work with spatial variables most often, I usually let \(n\) take on values from \(-N/2\) to \(N/2-1\). With this in mind, the discrete correlation of \(u_n\) is given by
+		$$\begin{equation}
+			\Gamma_{u}\left(m\right) = 
+			\begin{cases}
+				\sum\limits_{n=-N/2}^{N/2-m-1} \, u_{n} \, u_{n-m}, & \quad m\geq0 \\
+				\Gamma_{u}\left(-m\right), & \quad m < 0
+			\end{cases}.
+		\end{equation}$$
+		This form is like a Riemann sum for the correlation integral above. The expression here is a sum over time steps, rather than an integral over a continuous time variable. The index \(m\) is the integer time lag index, and the corresponding time lag is \(m \Delta t\). There are \(N\) time samples, so there are \(N\) nonzero lags \(m\), which is the top case above. The bottom case comprises \(N-1\) lags, for a total of \(2N-1\) values in \(\Gamma_u\left(m\right)\).
+		</p>
+		
+		<p>
+		Let \(w_n\) be a 1-D window function that has \(N_{nz}\) nonzero values in it. In computing the discrete correlation above for this window, consider \(\Gamma_{w}\left(0\right)\). Its value is
+		$$\begin{equation}
+			\Gamma_{w}\left(0\right) = \sum\limits_{n=-N/2}^{N/2-1} \, w_{n}^2 = N_{nz}.
+		\end{equation}$$
+		The sum equals \(N_{nz}\) because the window values \(w_n\) are either \(0\) or \(1\). \(N_{nz}\) values are equal to \(1\), while \(N-N_{nz}\) values are equal to \(0\). This is the peak value of the window's correlation sum. The sum for all other values of \(m\) is less than \(N_{nz}\).
+		</p>
+		
+		<p>
+		For 1-D signals, this discrete correlation can be calculated using Matlab's function <span class="code">xcorr</span>. However, the documentation for <span class="code">xcorr</span> describes a slightly different form given by
+		$$\begin{equation}
+			\Gamma_{u}\left(m\right) =
+			\begin{cases}
+				\sum\limits_{n=0}^{N-m-1} \, u_{n+m} \, u_{m}, & \quad m\geq0 \\
+				\Gamma_u\left(-m\right), & \quad m < 0
+			\end{cases}.
+		\end{equation}$$
+		There are two changes in this second version of the correlation sum. First, the time index \(n\) runs from \(0\) to \(N-1\), which makes sense. In programming languages, arrays do not have negative indices. However, Matlab uses 1-based indexing for its arrays, so in Matlab code the array indices are numbered \(1\) to \(N\). Second, the subscript of the second factor in the sum \(n+m\), rather than \(n-m\). This has no effect because we just need the difference between the two indices to be \(m\), due to symmetry in the correlation.
+		</p>
+		
+		This article discusses only auto-correlation, but <span class="code">xcorr</span> can compute a cross-correlation if two signals are provided as the first two arguments. A full discussion of <span class="code">xcorr</span> is beyond the scope of this article, but I provide a more detailed description with examples in <a href="corrCode.html">Improved Correlation Code</a>. To compute this discrete correlation sum in Matlab use, 
+		<div class="content">
+			<pre class="codeinput">Gamma = xcorr(w);</pre>
+		</div>
+		</p>
+		
+		<p>
+		Here is an example of the correlation sum with a rectangular window. The window is the variable w, and it has 10 samples. Only the four central values are nonzero. The output is shown below the code.
+			
+  <div class="content"><pre class="codeinput">
+1  <span class="comment">% corrRectWindow1D.m</span>
+2  clear <span class="string">variables</span>; clc;
+3  N = 10; <span class="comment">% number of samples</span>
+4  w = [0 0 0 1 1 1 1 0 0 0]; <span class="comment">% window function</span>
+5  wCorrNneg = zeros(1,N); <span class="comment">% allocate space for correlation, just nonnegative lags</span>
+6  <span class="comment">% explicit sum for correlation:</span>
+7  <span class="keyword">for</span> m = 0 : N-1
+8      wCorrNneg(m+1) = sum(w(m+1:N) .* w(1:N-m));
+9  <span class="keyword">end</span>
+10 <span class="comment">% use symmetry to fill in negative lags:</span>
+11 wCorrLoop = cat(2, wCorrNneg(N:-1:2), wCorrNneg);
+12 <span class="comment">% use xcorr to compute the same thing:</span>
+13 wXCorr = xcorr(w, <span class="string">'none'</span>);
+14 <span class="comment">% display correlation from loop:</span>
+15 fprintf(<span class="string">'wCorrLoop = \n'</span>)
+16 fprintf(<span class="string">'%1.0f '</span>, wCorrLoop)
+17 fprintf(<span class="string">'\n'</span>)
+18 <span class="comment">% display correlation from xcorr:</span>
+19 fprintf(<span class="string">'wXCorr = \n'</span>)
+20 fprintf(<span class="string">'%1.0f '</span>, wXCorr)
+21 fprintf(<span class="string">'\n'</span>)
+</pre>
+<pre class="codeoutput">wCorrLoop = 
+0 0 0 0 0 0 1 2 3 4 3 2 1 0 0 0 0 0 0 
+wXCorr = 
+0 0 0 -0 0 0 1 2 3 4 3 2 1 0 0 -0 0 0 0 
+</pre>
+</div>
+		<p>
+		The window has \(N = 10\) values, and the resulting correlation sums have \(2N-1 = 19\) values. Notice that in the loop covers \(0 \leq m \leq N-1\), but the array indices are numbered \(1-N\) because Matlab uses 1-based array indexing.  The window correlation from the explicit loop and <span class="code">xcorr</span> are essentially the same with slight differences leading to the negative signs on two of the values in the <span class="code">xcorr</span> output. The peak value is \(N_{nz} = 4\), and it is in the \(N^{th}\) position of the correlation sum.
+		</p>
+		
+		<p>
+		I illustrate this one more time with a window that is not contiguous. This time, line 4 is changed so that the window is given by
+		</p>
+  <div class="content"><pre class="codeinput">
+4  w = [0 1 0 1 0 1 1 1 1 0]; <span class="comment">% window function</span>
+</pre>
+</div>
+		<p>
+		The resulting output is:
+		</p>
+  <div class="content"><pre class="codeoutput">
+wCorrLoop = 
+0 0 1 1 2 2 2 4 3 6 3 4 2 2 2 1 1 0 0 
+wXCorr = 
+0 0 1 1 2 2 2 4 3 6 3 4 2 2 2 1 1 0 0 
+</pre>
+</div>
+		<p>
+		There are \(N_{nz} = 6\) nonzero values in the window this time, and the peak value of the correlation sum is \(6\). It still occurs in the \(N^{th}\) position of the correlation sum.
 		</p>
 		
 		<h2>Discrete Correlation of 2-D Window Functions</h2>
 		<p>
-		In my book, I try to use continuous functions as much as possible.  At some point, though, it is necessary to analyze the discrete calculations that actually occur in computers.  With that in mind, discrete cross-correlation is given by
-		\[
-			C_{m,n} = \sum\limits_{i=0}^{N-m-1} \sum\limits_{j=0}^{N-n-1} \, U_{i,j} \, U_{i-m,j-n}^{\ast} \text{    for    } m\geq0
-		\]
+		In optics, we often work with 2-D arrays of data from cameras, wavefront sensors, and the like. Fortunately, the development of the previous section generalizes to 2-D in a straightforward way. With that in mind, the 2-D discrete correlation sum is given by
+		$$\begin{equation}
+			\Gamma_u\left(m,n\right) = 
+			\begin{cases}
+				\sum\limits_{i=0}^{N-m-1} \sum\limits_{j=0}^{N-n-1} \, u_{i+m,j+n} \, u_{i,j}, & \quad m\geq0 \\
+			\Gamma_u\left(-m,-n\right), & \quad m < 0.
+			\end{cases}
+		\end{equation}$$
 		</p>
+		
 		<p>
-		(Matlab help for xcorr is useful)
-
-		Inside corr2_ft, the variable maskcorr is the autocorrelation of the signal's mask (the variable mask). In principle, the peak value of maskcorr should be equal to delta^2
+		Matlab provides the function <span class="code">xcorr2</span> in its Signal Processing Toolbox to compute the discrete correlation sum like this:
+		<div class="content">
+			<pre class="codeinput">Gamma = xcorr2(w);</pre>
+		</div>
+		If <span class="code">w</span> has \(M\) rows and \(N\) columns, the output <span class="code">Gamma</span> has \(2 M-1\) rows and \(2 N-1\) columns. If <span class="code">w</span> has \(N_{nz}\) total nonzero values, the peak of <span class="code">Gamma</span> is \(N_{nz}\), and it occurs at the entry in row \(M\) and column \(N\).
 		</p>
+		
+		<p>
+		Here is an example of its usage that is similar to the 1-D examples of <span class="code">xcorr</span> above. The code below is followed by the resulting command-line output and figures. This example shows both the usage of <span class="code">xcorr2</span> function and a <abbr title = "Fourier transform">FT</abbr>-based calculation. There are a few key differences to note. Note that the output of <span class="code">xcorr2</span> has \(2N-1\) rows and \(2M-1\) columns, as expected. For the <abbr title = "Fourier transform">FT</abbr>-based calculation, the user needs to pad the input arrays to have \(2N\) rows and \(2M\) columns. The prevents a circular correlation from being calculated. As a result, the output of the <abbr title = "Fourier transform">FT</abbr>-based calculation has \(2N\) rows and \(2M\) columns, rather than \(2N-1\) rows and \(2M-1\) columns.
+		</p>
+
+<div class="content"><pre class="codeinput">
+1  <span class="comment">% checkXcorr2.m</span>
+2  
+3  <span class="comment">% define window and spatial grid:</span>
+4  N = 512; <span class="comment">% number of grid points per side</span>
+5  w = ones(N); <span class="comment">% window that covers the entire grid</span>
+6  w(201:400,301:500) = 0;
+7  dx = 1; <span class="comment">% grid spacing [m]</span>
+8  x = (-N/2 : N/2-1) * dx; <span class="comment">% spatial grid</span>
+9
+10  <span class="comment">% count the number of nonzero entries, output to command line:</span>
+11 sprintf(<span class="string">'There are %i nonzero entries in w'</span>, sum(w(:)))
+12
+13 <span class="comment">% show original window:</span>
+14 figure(1); clf;
+15 imagesc(x, x, w);
+16 axis(<span class="string">'image'</span>, <span class="string">'xy'</span>);
+17 colorbar;
+18 xlabel(<span class="string">'x [m]'</span>);
+119 ylabel(<span class="string">'y [m]'</span>);
+20
+21 <span class="comment">% compute autocorrelation from original window using Matlab's xcorr2:</span>
+22 c1 = xcorr2(w, w);
+23 <span class="comment">% size of c1 is 2N-1 by 2N-1</span>
+24 xCor2 = (-N+1 : N-1)*dx; <span class="comment">% spatial grid for xcorr2 result</span>
+25 <span class="comment">% find the max value and its row &amp; column:</span>
+26 [M, I] = max(c1(:));
+27 [row, col] = ind2sub([2*N-1, 2*N-1], I);
+28
+29 <span class="comment">% show window correlation from xcorr2:</span>
+30 figure(2); clf;
+31 imagesc(xCor2, xCor2, c1);
+32 axis(<span class="string">'image'</span>, <span class="string">'xy'</span>);
+33 colorbar;
+34 xlabel(<span class="string">'x [m]'</span>);
+35 ylabel(<span class="string">'y [m]'</span>);
+36 title(sprintf(<span class="string">'Max value is %i, in row %i and col %i'</span>, M, row, col));
+37
+38 <span class="comment">%% FT-based calculation of the correlation</span>
+39 
+40 <span class="comment">% define zero-padded window and grid so that non-circular correlation is</span>
+41 <span class="comment">% computed:</span>
+42 NPad = 2*N; <span class="comment">% number of grid points in zero-padded array</span>
+43 wPad = zeros(NPad, NPad); <span class="comment">% making zero-padded array</span>
+44 idxOrig = (-N/2 : N/2-1) + N+1; <span class="comment">% indices for original window</span>
+45 wPad(idxOrig, idxOrig) = w; <span class="comment">% fill center of zero-padded array</span>
+46 xPad = (-NPad/2 : NPad/2-1)*dx; <span class="comment">% coordinates for zero-padded array</span>
+47
+48 <span class="comment">% show padded window:</span>
+49 figure(3); clf;
+50 imagesc(xPad, xPad, wPad);
+51 axis(<span class="string">'image'</span>, <span class="string">'xy'</span>);
+52 colorbar;
+53 xlabel(<span class="string">'x [m]'</span>);
+54 ylabel(<span class="string">'y [m]'</span>);
+55
+56 <span class="comment">% compute autocorrelation from padded window using Fourier transforms:</span>
+57 df = 1/NPad; <span class="comment">% spatial frequency grid spacing</span>
+58 c2 = ift2(abs(ft2(wPad, dx)).^2, df);
+59 <span class="comment">% wFT = ft2(wPad, dx);</span>
+60 <span class="comment">% wFtFlip = ft2(flip(flip(wFT,1),2), dx);</span>
+61 <span class="comment">% c2 = ift2(wFT.*wFtFlip, df);</span>
+62 <span class="comment">% find the max value and its row &amp; column:</span>
+63 [M, I] = max(c2(:));
+64 [row, col] = ind2sub([2*N, 2*N], I);
+65
+66 <span class="comment">% show window correlation from Fourier transform:</span>
+67 figure(4); clf;
+68 imagesc(xPad, xPad, abs(c2));
+69 axis(<span class="string">'image'</span>, <span class="string">'xy'</span>);
+70 colorbar;
+71 xlabel(<span class="string">'x [m]'</span>);
+72 ylabel(<span class="string">'y [m]'</span>);
+73 title(sprintf(<span class="string">'Max value is %i, in row %i and col %i'</span>, M, row, col));
+</pre>
+
+<pre class="codeoutput">ans =
+    'There are 222144 nonzero entries in w'
+</pre>
+
+<img vspace="5" hspace="5" src="checkXcorr2_01.png" alt=""> <img vspace="5" hspace="5" src="checkXcorr2_02.png" alt=""> 
+
+<img vspace="5" hspace="5" src="checkXcorr2_03.png" alt=""> <img vspace="5" hspace="5" src="checkXcorr2_04.png" alt="">
+</div>
+
+	<p>
+	In the code above, <span class="code">w</span> is the input to <span class="code">xcorr2</span>, and it has size \(N = M = 512\). The output is <span class="code">c1</span>, and it has size \(2N-1 = 2M-1 = 1023\). The peak value of <span class="code">c1</span> is equal to the number of nonzero entries, and it is located in row \(N\), column \(M\).
+	</p>
+	
+	<p>
+	In the code above, <span class="code">wPad</span> is the input to the FT-based calculation, and its size is padded size is \(2N = 2M = 1024\). The outputs of the functions <span class="code">ft2</span> and <span class="code">ift2</span> have the same size as the input, so the variable <span class="code">c2</span> has size \(2N = 2M = 1024\). The origin of the spatial grid for <span class="code">c2</span> is located in row \(N+1 = 513\), column \(M+1 = 513\). Thus, its peak value located at row 513 and column 513.
+	</p>
+
 	</div>
 
 	<div class="footer">

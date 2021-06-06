@@ -1,16 +1,29 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!--<meta name="generator" content="MATLAB 9.7">-->
+	<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+	<meta name="DC.date" content="2020-08-12"><meta name="DC.source" content="checkXcorr.m">
+	<link rel="stylesheet" type="text/css" href="../matlab.css" /> 	  
 	<link rel="stylesheet" type="text/css" href="../mainPage.css" />
 
 	<title>Chapter 3: Simple Computations Using Fourier Transforms</title>
 
 	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+	
+	<script>
+		window.MathJax = {
+		  tex: {
+			tags: 'ams'
+		  }
+		};
+	</script>
 
 </head>
 
@@ -47,57 +60,93 @@
 		<h1>Some Statistical Definitions</h1>
 		<p>
 		<dfn>Ensemble averages</dfn> (also called <dfn>expected values</dfn>) of a random process are defined as
-		\[
+		$$
+		\begin{equation}
 			\left\langle f\left(u\right) \right\rangle = \int\limits_{-\infty}^{\infty} f\left(u\right) p\left(u\right) \, d u,
-		\]
+		\end{equation}
+		$$
 		where \(u\) is the random variable, \(p\left(u\right)\) is its probability density function (<abbr title = "Probability Density Function">PDF</abbr>), and \(f\left(u\right)\) is an arbitrary function of \(u\). For example, the mean and mean-square value of \(u\) are given by
-		\[
+		$$
+		\begin{equation}
 			\mu_u = \left\langle u \right\rangle = \int\limits_{-\infty}^{\infty} u \, p\left(u\right) \, d u
-		\]
+		\end{equation}
+		$$
 		and
-		\[
+		$$
+		\begin{equation}
 			\left\langle u^2 \right\rangle = \int\limits_{-\infty}^{\infty} u^2 \, p\left(u\right) \, d u,
-		\]
+		\end{equation}
+		$$
 		respectively. We can combine these to compute variance \(\sigma_u^2\), given by
-		\[
+		$$
+		\begin{equation}
 			\sigma_u^2 = \left\langle \left(u - \left\langle u \right\rangle \right)^2 \right\rangle.
-		\]
+		\end{equation}
+		$$
 		These are called <dfn>point statistics</dfn>.
 		</p>
 		
 		<p>
 		If we have two random variables \(u\) and \(v\) described by a <i>joint <abbr title = "Probability Density Function">PDF</abbr></i> \(p\left(u,v\right)\), we can describe how they are related on average by their <dfn>correlation</dfn>, defined as
-		\[
+		$$
+		\begin{equation}
 			\Gamma_{uv} = \left\langle u v \right\rangle = \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} u v \, p\left(u,v\right) \, d u \, dv.
-		\]
+		\end{equation}
+		$$
 		A similar measure of this relationship between \(u\) and \(v\) is the <dfn>covariance</dfn> \(C_{uv} = \Gamma_{uv} - \left\langle u \right\rangle \left\langle v \right\rangle \). Finally, we define the <dfn>correlation coefficient</dfn> \( \rho_{uv} = \Gamma_{uv} / \left( \left\langle u \right\rangle \left\langle v \right\rangle \right) \). When \(v = u \), these are called the <dfn>autocorrelation</dfn> and <dfn>autocovariance</dfn>, respectively.
 		</p>
 		
 		<h2>Temporal Random Processes</h2>
 		<p>
 		<dfn>Random processes</dfn> are random variables that evolve over time, like \(u\left(t\right)\) and \(v\left(t\right)\). In general, the <abbr title = "Probability Density Function">PDF</abbr> and expected values are functions of time, e.g.,
-		\[
+		$$
+		\begin{equation}
 			\mu_u\left(t\right) = \left\langle u\left(t\right) \right\rangle = \int\limits_{-\infty}^{\infty} u\left(t\right) \, p\left(u, t\right) \, du,
-		\]
-		\[
+		\end{equation}$$
+		$$
+		\begin{equation}
 			\left\langle u^2\left(t\right) \right\rangle = \int\limits_{-\infty}^{\infty} u^2\left(t\right) \, p\left(u, t\right) \, du,
-		\]
+		\end{equation}
+		$$
 		and
-		\[
+		$$
+		\begin{equation}
 			\sigma_u^2\left(t\right) = \left\langle \left[u\left(t\right) - \left\langle u\left(t\right) \right\rangle \right]^2 \right\rangle.
-		\]
+		\end{equation}
+		$$
 
 		Statistical correlation of a random process involves averages at two different moments in time, \(t_1\) and \(t_2\). <dfn>Temporal correlation</dfn> is a good example:
-		\[
-		   \Gamma_{u}\left(t_1,t_2\right) = \left\langle u\left(t_1\right) \left(t_2\right) \right\rangle = \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} u\left(t_1\right) u\left(t_2\right) \, p\left[u\left(t_1\right),\left(t_2\right)\right] \, d u\left(t_1\right) \, d u\left(t_2\right).
-		\]
+		$$
+		\begin{equation}
+		   \Gamma_{u}\left(t_1,t_2\right) = \left\langle u\left(t_1\right) u\left(t_2\right) \right\rangle = \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} u\left(t_1\right) u\left(t_2\right) \, p\left[u\left(t_1\right),u\left(t_2\right)\right] \, d u\left(t_1\right) \, d u\left(t_2\right).
+		\end{equation}
+		$$
+		Also, we have the closely-related <dfn>temporal covariance</dfn>, which is the correlation of the process \(u\left(t\right)\) with its mean subtracted according to
+		$$
+		\begin{align}
+			C_{u}\left(t_1,t_2\right) &= \left\langle \left[u\left(t_1\right)-\mu_u\left(t_1\right)\right] \left[u\left(t_2\right)-\mu_u\left(t_2\right)\right] \right\rangle \\
+			&= \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} \left[u\left(t_1\right)-\mu_u\left(t_1\right)\right] \left[u\left(t_2\right)-\mu_u\left(t_2\right)\right] \, p\left[u\left(t_1\right),u\left(t_2\right)\right] \, d u\left(t_1\right) \, d u\left(t_2\right).
+	   \end{align}
+		$$
+		Covariance is related to correlation according to
+		$$
+		\begin{equation}
+			C_{u}\left(t_1,t_2\right) = \Gamma_{u}\left(t_1,t_2\right) - \left\langle u\left(t_1\right) \right\rangle \left\langle u\left(t_2\right)\right\rangle.
+		\end{equation}
+		$$
 		
-		<b>Define C in terms of mean-removed correlation</b>
-		
-		We have the closely-related <dfn>temporal covariance</dfn> \( C_{u}\left(t_1,t_2\right) = \Gamma_{u}\left(t_1,t_2\right) - \left\langle u\left(t_1\right) \right\rangle \left\langle u\left(t_2\right)\right\rangle \). Also, there is another statistic that appears in optical turbulence often, called the structure function \( D_u\left(t_1,t_2\right) \). Generally, it involves only one process, and it is defined as
-		\[
+		Finally, there is another statistic that appears in optical turbulence often, called the structure function \(D_u\left(t_1,t_2\right).\) Generally, it involves only one process, and it is defined as
+		$$
+		\begin{equation}
 			D_u\left(t_1,t_2\right) = \left\langle \left[ u\left(t_1\right) - u\left(t_2\right) \right]^2 \right\rangle.
-		\]
+		\end{equation}
+		$$
+		The structure function is related to the correlation according to
+		$$
+		\begin{equation}
+			D_{u}\left(t_1,t_2\right) = \left\langle u^2\left(t_1\right) \right\rangle + \left\langle u^2\left(t_2\right)\right\rangle - 2\Gamma_{u}\left(t_1,t_2\right).
+		\end{equation}
+		$$
 		
 		<h2>Ergodicity and Stationarity</h2>
 		
@@ -105,47 +154,89 @@
 		There are a few important categories of random processes. These are <abbr title = "Wide Sense Stationary">WSS</abbr>, <abbr title = "Strict Sense Stationary">SSS</abbr>, ergodic, and stationary increments. Processes with these restrictions apply to many physical phenomena and are useful for their mathematical tractibility.
 		</p>
 		
+		<h3>Ergodicity</h3>
 		<p>
 		<dfn>Ergodicity</dfn> is the most restrictive property and has the most useful of mathematical properties. For ergodic processes, <i>ensemble</i> averages of ergodic processes are equal to their <i>time</i> averages. We write the <dfn>time average</dfn> as
 		$$
+		\begin{equation}
 			\overline{f\left[u\left(t\right)\right]} = \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} f\left[u\left(t\right)\right] \, dt.
+		\end{equation}
 		$$
-		Ergodicity is written mathematically as
-		\[
+		Ergodicity is expressed mathematically as
+		$$
+		\begin{equation}
 			\left\langle f\left[u\left(t\right)\right] \right\rangle = \overline{f\left[u\left(t\right)\right]}.
-		\]
+		\end{equation}
+		$$
 		</p>
 		
+		<h3>Strict-Sense Stationary</h3>
 		<p>
-		<dfn><abbr title = "Strict Sense Stationary">SSS</abbr></dfn> processes satisfy a slightly less restrictive criterion. In this case, the \(N^{th}\)-order <abbr title = "Probability Density Function">PDF</abbr> is independent of time origin for all \(N\). Thus, we write this as
-		\[
+		<dfn><abbr title = "Strict-Sense Stationary">SSS</abbr></dfn> processes satisfy a slightly less restrictive criterion. In this case, the \(N^{th}\)-order <abbr title = "Probability Density Function">PDF</abbr> is independent of time origin for all \(N\). Thus, we write this as
+		$$
+		\begin{equation}
 			p\left(u_1, u_2, \ldots, u_N; t_1, t_2, \ldots, t_N\right) = p\left(u_1, u_2, \ldots, u_N; t_1-T, t_2-T, \ldots, t_N-T\right)
-		\]
+		\end{equation}
+		$$
 		for all \(T\). As simple examples, a first-order <abbr title = "Probability Density Function">PDF</abbr> is independent of time altogether, i.e., \( p\left(u\right) \), and a second-order <abbr title = "Probability Density Function">PDF</abbr> depends only on a time difference, i.e., \( p\left(u_1,u_2;\tau\right) \), where \( \tau=t_2-t_1 \).
 		</p>
 		
+		<h3>Wide-Sense Stationary</h3>
 		<p>
-		<dfn><abbr title = "Wide Sense Stationary">WSS</abbr></dfn> processes are slightly less restrictive than <abbr title = "Strict Sense Stationary">SSS</abbr> processes and have two key properties. First, the variance is independent of time such that
-		\[
-			\sigma_u^2\left(t\right) = \sigma_u^2.
-		\]
+		<dfn><abbr title = "Wide-Sense Stationary">WSS</abbr></dfn> processes are slightly less restrictive than <abbr title = "Strict Sense Stationary">SSS</abbr> processes and have two key properties. First, the mean is independent of time such that
+		$$
+		\begin{equation}
+			\mu_u\left(t\right) = \mu_u.
+		\end{equation}
+		$$
 		Second, the correlation depends only on the time difference \(\tau = t_2 - t_1\) such that
-		\[
+		$$
+		\begin{equation}
 			\Gamma_{u}\left(t_1,t_2\right) = \Gamma_{u}\left(\tau\right)
-		\]
+		\end{equation}
+		$$
 		and
-		\[
-			C_{u}\left(t_1,t_2\right) = \Gamma_{u}\left(\tau\right) - \mu_u^2.
-		\]
-		<b>Is the mean constant for WSS or SSS?</b>
+		$$
+		\begin{equation}
+			C_{u}\left(t_1,t_2\right) = C_u\left(\tau\right) = \Gamma_{u}\left(\tau\right) - \mu_u^2.
+		\end{equation}
+		$$
+		Note that the variance is \(\sigma_u^2 = C_u\left(0\right)\), indicating that is constant. Finally, the structure function has a similar relationship to the correlation and covariance given by
+		$$
+		\begin{align}
+			D_u\left(\tau\right) &= 2\Gamma_{u}\left(0\right) - 2\Gamma_{u}\left(\tau\right)\\
+			&= 2C_{u}\left(0\right) - 2C_{u}\left(\tau\right) = 2\sigma_u^2 - 2C_{u}\left(\tau\right).
+		\end{align}
+		$$
+		</p>
+		
+		<h3>Practical Forms of Time Averages for Ergodic Processes</h3>
+		<p>
+		To make the time averages more evident, we write the first- and second-order statistics for an ergodic random process \(u\left(t\right)\) as
+		$$
+		\begin{align}
+			\mu_u &= \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} u\left(t\right) \, dt, \\
+			\sigma_u^2 &= \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} \left[ u\left(t\right) - \mu_u\right]^2 \, dt, \\
+			\Gamma_u\left(\tau\right) &= \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} u\left(t\right) u\left(t-\tau\right) \, dt, \\
+			C_u\left(\tau\right) &= \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} \left[u\left(t\right) - \mu_u\right] \left[u\left(t-\tau\right) - \mu_u\right] \, dt.
+		\end{align}
+		$$
+		These are very useful forms. Often, we have one or more discretely sampled time series of \(u\left(t\right)\), and so we use discrete versions of these equations in practice. In Matlab, the <span class="code">mean</span> and <span class="code">var</span> functions can be used to compute the statistical mean and variance of an array of values, whether or not the values constitute a time series. The <span class="code">xcorr</span> and <span class="code">xcov</span> can be used to compute the statistical correlation and covariance of an array of values. For these two functions, the array must represent a time series. Also, <span class="code">xcorr</span> and <span class="code">xcov</span> can compute the cross-correlation and cross-covariance between two different random processes. Although cross-correlation and cross-covariance are not specifically covered in this article, the equations generalize to cross-correlation and cross-covariance in a straighforward way.
 		</p>
 		
 		<p>
+		Of course, <span class="code">mean</span>, <span class="code">var</span>, <span class="code">xcorr</span> and <span class="code">xcov</span> operate on a finite number of samples. Thus, \(T\) cannot go to infinity, and the continuous integrals with infinite limits are approximated with discrete sums. More samples produces a better approximation. For computing correlation and covariance, each separation \(\tau\) has a different number of samples in the discrete sum. This produces a <i>biased estimate</i> of the correlation and covariance. This is explained in Matlab's documentation for <span class="code">xcorr</span> and <span class="code">xcov</span>. There is an optional argument to specify whether the calculation should produce a biased or unbiased estimate. I have another article on this supplemental information website to illustrate the differnces because it is important to understand the differnces and do the correct calculation.
+		</p>
+		
+		<h3>Stationary Increments</h3>
+		<p>
 		Finally, <dfn>stationary increments</dfn> is the least restrictive category discussed here. In this case, we can define a new process from \( u\left(t\right) \) such that
-		\[
+		$$
+		\begin{equation}
 			v\left(t_1, t_2\right) = u\left(t_2\right) - u\left(t_1\right).
-		\]
-		If \( v\left(t_1, t_2\right) \) is <abbr title = "Strict Sense Stationary">SSS</abbr>, we say that \( u\left(t_2\right) \) has <i>stationary increments</i>. When we encounter a random process that is not <abbr title = "Wide Sense Stationary">WSS</abbr>, the structure function can be a useful and more appropriate way of characterizing a process than the correlation.
+		\end{equation}
+		$$
+		If \( v\left(t_1, t_2\right) \) is <abbr title = "Strict Sense Stationary">SSS</abbr>, we say that \( u\left(t\right) \) has <i>stationary increments</i>. When we encounter a random process that is not <abbr title = "Wide Sense Stationary">WSS</abbr>, the structure function can be a useful and more appropriate way of characterizing a process than the correlation.
 		</p>
 		
 		<h2>Random Fields</h2>
@@ -159,7 +250,7 @@
 			
 			\sigma_u^2\left(\mathbf{r},t\right) &= \left\langle \left[u\left(\mathbf{r},t\right) - \left\langle u\left(\mathbf{r},t\right) \right\rangle \right]^2 \right\rangle,\\
 
-		   \Gamma_{u}\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) &= \left\langle u\left(\mathbf{r}_1,t_1\right) u\left(\mathbf{r}_2,t_2\right) \right\rangle \\
+			\Gamma_{u}\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) &= \left\langle 	u\left(\mathbf{r}_1,t_1\right) u\left(\mathbf{r}_2,t_2\right) \right\rangle \\
 		   &\qquad = \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} u\left(\mathbf{r}_1,t_1\right) u\left(\mathbf{r}_2,t_2\right) \, p\left[u\left(\mathbf{r}_1,t_1\right), u\left(\mathbf{r}_2,t_2\right)\right] \, d u\left(\mathbf{r}_1,t_1\right) \, d u\left(\mathbf{r}_2,t_2\right),\\
 		   
 		   C_{u}\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) &= \Gamma_{u}\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) - \left\langle u\left(\mathbf{r}_1,t_1\right) \right\rangle \left\langle u\left(\mathbf{r}_2,t_2\right)\right\rangle \\
@@ -171,14 +262,73 @@
 		
 		<h2>Homogeneity and Isotropy</h2>
 		<p>
-		When a random field is stationary in 2-D or 3-D space, it is called <dfn>homogeneous</dfn>.
+		The principles of ergodicity for temporal random processes generalize to spatial processes. When a random field is stationary in 2-D or 3-D space, it is called <dfn>homogeneous</dfn>. In the case of homogeneous random fields, spatial statistics simplify to
+		$$
+		\begin{align}
+			\mu_u\left(\mathbf{r},t\right) &= \mu_u,\\
+
+			\sigma_u^2\left(\mathbf{r},t\right) &= \sigma_u^2,\\
+
+			\Gamma_{u}\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) &= \Gamma_{u}\left(\mathbf{r}_1-\mathbf{r}_2,t_2-t_1\right),\\
+		   
+			C_{u}\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) &= C_{u}\left(\mathbf{r}_1-\mathbf{r}_2,t_2-t_1\right) \\
+			&= \Gamma_{u}\left(\mathbf{r}_1-\mathbf{r}_2,t_2-t_1\right) - \mu_u^2\\
+
+			D_u\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) &= D_u\left(\mathbf{r}_1-\mathbf{r}_2,t_2-t_1\right)\\
+			&= 2\Gamma_{u}\left(\mathbf{0},0\right) - 2\Gamma_{u}\left(\mathbf{r}_1-\mathbf{r}_2,t_2-t_1\right)\\
+			&= 2C_{u}\left(\mathbf{0},0\right) - 2C_{u}\left(\mathbf{r}_1-\mathbf{r}_2,t_2-t_1\right)\\
+			&= 2\sigma_u^2 - 2C_{u}\left(\mathbf{r}_1-\mathbf{r}_2,t_2-t_1\right).
+		\end{align}
+		$$
+		Furthermore with spatially ergodic random fields, ensemble averages are equal to their spatial averages. A <i>spatial average</i> can be written as
+		$$
+		\begin{equation}
+			\overline{f\left[u\left(\mathbf{r}\right)\right]} = \lim\limits_{A\to\infty} \frac{1}{A} \int\limits_{\mathcal{A}} f\left[u\left(\mathbf{r}\right)\right] \, d\mathbf{r},
+		\end{equation}
+		$$
+		where \(\mathcal{A}\) is the spatial domain of the integration, an \(A\) is its area.
+		Spatial ergodicity is expressed mathematically as
+		$$
+		\begin{equation}
+			\left\langle f\left[u\left(\mathbf{r}\right)\right] \right\rangle = \overline{f\left[u\left(\mathbf{r}\right)\right]}.
+		\end{equation}
+		$$
+		</p>		
 		
-		Andrews writes this as spatially constant mean and covariance depends on only shift.
-		
-		Isotropic if moment does not depend on direction, just the magnitude.
+		<p>
+		Because random fields depend on a vector argument, there is one more limiting case, namely <dfn>isotropy</dfn>.  An isotropic random field's moments do not depend on direction, just the magnitude. In this case, second-order moments that depend on separation simplify to these forms:
+		$$
+		\begin{align}
+			\Gamma_{u}\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) &= \Gamma_{u}\left(\left\vert\mathbf{r}_1-\mathbf{r}_2\right\vert,t_2-t_1\right),\\
+		   
+			C_{u}\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) &= C_{u}\left(\left\vert\mathbf{r}_1-\mathbf{r}_2\right\vert,t_2-t_1\right) \\
+
+			D_u\left(\mathbf{r}_1,t_1,\mathbf{r}_2,t_2\right) &= D_u\left(\left\vert\mathbf{r}_1-\mathbf{r}_2\right\vert,t_2-t_1\right)
+		\end{align}
+		$$
+		Notice that the relationships between the correlation, covariance, and structure function extend to homogeneous random fields. Often, optical turbulence (refractive index, phase, etc.) is treated as a homogeneous and isotropic random process. This simplifies calculations, although the accuracy of these approximations depends on the time of day, location in the atmosphere, etc.
 		</p>
 		
+		<p>
+		Just like with temporal random processes, we can write useful forms of first- and second-order ergodic fields by being explicit about the spatial averages. These are given by
+		$$
+		\begin{align}
+			\mu_u &= \lim\limits_{A\to\infty} \frac{1}{A} \int\limits_{\mathcal{A}} u\left(\mathbf{r}\right) \, d\mathbf{r}, \\
+			\sigma_u^2 &= \lim\limits_{A\to\infty} \frac{1}{A} \int\limits_{\mathcal{A}} \left[ u\left(\mathbf{r}\right) - \mu_u\right]^2 \, d\mathbf{r}, \\
+			\Gamma_u\left(\Delta r\right) &= \lim\limits_{A\to\infty} \frac{1}{A} \int\limits_{\mathcal{A}} u\left(\mathbf{r}_1\right) u\left(\mathbf{r}_1-\Delta\mathbf{r}\right) \, d\mathbf{r}_1, \\
+			C_u\left(\Delta\mathbf{r}\right) &= \lim\limits_{A\to\infty} \frac{1}{A} \int\limits_{\mathcal{A}} \left[u\left(\mathbf{r}_1\right) - \mu_u\right] \left[u\left(\mathbf{r}_1-\Delta\mathbf{r}\right) - \mu_u\right] \, d\mathbf{r}_1,
+		\end{align}
+		$$
+		</p>
 		
+		<p>
+		Again, these are generally the most useful forms for computing these statistics from discretely sampled data. For 2-D random fields, the <span class="code">mean</span> and <span class="code">var</span> functions can still be used. If we have a 2-D array <span class="code">u</span>, we can comput its sample mean using <span class="code">mean(mean(u))</span> or <span class="code">mean(u(:))</span>. To compute the sample variance, the simplest way is <span class="code">var(u(:))</span>.
+		</p>
+		
+		<p>
+		For computing correlation and covariance of 2-D fields, there is no Matlab function like <span class="code">xcorr</span> or <span class="code">xcov</span>. That is why Section 3.2 in my book explains how this calculation works in 2-D. Again, there is a different number of samples for each spatial separation \(\Delta r\). This is more complicated in 2-D than 1-D because in 2-D, and in optics, we often work with data that has a "mask" associated with it. This is due to the combination of circular lenses and mirrors with rectangular sensors. The <span class="code">corr2_ft</span> function from my book is intended to handle this, but the code is a bit flawed. In another article on this website, I provide improved code with a full explanation.
+		</p>
+
 		<h2>References</h2>
 		<ol>
 			<li>Joseph W. Goodman, <u>Statistical Optics</u> Ch. 3, Wiley, New York, NY (1985)</li>

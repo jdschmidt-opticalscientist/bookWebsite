@@ -74,20 +74,20 @@
 			\Gamma_u\left(\tau\right) = \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} u\left(t\right) u\left(t-\tau\right) \, \textrm{d}t,
 		\end{equation}
 		$$
-		where \(u\left(t\right)\) is the random process, \(t\) is time, \(\tau\) is a time difference (also called time lag). I refer to a <i>window</i> function as a function that has only two values, 1 and 0, and covers a finite duration. In our context, it multiplies a random process to indicate valid times. For example, \(W\left(t\right) = \textrm{rect}\left(\frac{t}{T}\right)\) is nonzero for \( \left\vert t \right\vert < T/2 \).  Strictly speaking, the rect function takes on a value of 1/2 when \(t = \pm T/2\), but often, that property can be ignored. The presence of the rect function might indicate the time period for a which a sensor was on and made a measurement of a random process.
+		where \(u\left(t\right)\) is the random process, \(t\) is time, \(\tau\) is a time difference (also called time lag). I refer to a <i>window</i> function as a function that has only two values, 1 and 0, and covers a finite duration. In our context, it multiplies a random process to indicate valid times. For example, \(W\left(t\right) = \textrm{rect}\left(\frac{t}{T_W}\right)\) is nonzero for \( \left\vert t \right\vert < T_W/2 \).  Strictly speaking, the rect function takes on a value of 1/2 when \(t = \pm T_W/2\), but often, that property can be ignored. The presence of the rect function might indicate the time period for a which a sensor was on and made measurements of a random process.
 		</p>
 		
 		<p>
-		This article is not concerned with evaluating the integral for random processes. Instead, that topic is addressed in <a href="corrCode.html">Improved Correlation Code</a>. When the integrand is the product of two window functions, the correlation integral has interesting properties, beginning with
+		This article is not concerned with evaluating the integral for random processes. Instead, that topic is addressed in <a href="corrCode.html">Improved Correlation Code</a>. When the integrand is the product of two window functions, we denote the integral (with infinite limits) as \(\mathcal{A}\), and it has interesting properties, beginning with
 		$$
 		\begin{align}
-			\Gamma_w\left(\tau\right) &= \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} W\left(t\right) W\left(t-\tau\right) \, \textrm{d}t \\
+			\mathcal{A}\left(\tau\right) &= \int\limits_{-\infty}^{\infty} W\left(t\right) W\left(t-\tau\right) \, \textrm{d}t \\
 			&= \int\limits_{-\infty}^{\infty} W\left(t\right) W\left(t-\tau\right) \, \textrm{d}t
 		\end{align}
 		$$
 		since the window function \(W\left(t\right)\) is nonzero over a finite time period. Also, this can be evaluated using Fourier transforms according to
 		$$
-		\Gamma_w\left(\tau\right) = \mathcal{F}^{-1} \left\{ \left\vert
+		\mathcal{A}\left(\tau\right) = \mathcal{F}^{-1} \left\{ \left\vert
 		\mathcal{F}\left\{W\left(t\right)\right\} \right\vert^2 \right\}.
 		$$
 		</p>
@@ -96,7 +96,7 @@
 		For the case of zero time lag,
 		$$
 		\begin{align}
-			\Gamma_w\left(0\right) &= \int\limits_{-\infty}^{\infty} W^2\left(t\right) \, \textrm{d}t \\
+			\mathcal{A}\left(0\right) &= \int\limits_{-\infty}^{\infty} W^2\left(t\right) \, \textrm{d}t \\
 			&= \int\limits_{-\infty}^{\infty} W\left(t\right) \, \textrm{d}t \\
 			&\equiv T_W,
 		\end{align}
@@ -109,7 +109,7 @@
 		$$
 		\begin{align}
 			W\left(t\right) &= \mathrm{rect}\left(\frac{t}{T_W}\right) \\
-			\Gamma_w\left(\tau\right) &= \int\limits_{-\infty}^{\infty} \mathrm{rect}\left(\frac{t}{T_W}\right) \mathrm{rect}\left(\frac{t-\tau}{T_W}\right) \, \textrm{d}t \\
+			\mathcal{A}\left(\tau\right) &= \int\limits_{-\infty}^{\infty} \mathrm{rect}\left(\frac{t}{T_W}\right) \mathrm{rect}\left(\frac{t-\tau}{T_W}\right) \, \textrm{d}t \\
 			&= T_W \mathbf{tri}\left(\frac{\tau}{T_W}\right).
 		\end{align}
 		$$
@@ -118,27 +118,27 @@
 
 		<h2>Continuous 2-D Correlation of Window Functions</h2>
 		<p>
-		The 1-D case generalizes to 2-D easily. The time-average correlation of two <abbr title = "Wide Sense Stationary">WSS</abbr> 2-D signals is given by
+		The 1-D case generalizes to 2-D easily. The spatial average correlation of two <abbr title = "Wide Sense Stationary">WSS</abbr> 2-D signals is given by
 		$$
 		\begin{equation}
-			\Gamma_u(\mathbf{\Delta r})=\int u (\mathbf{r}) u (\mathbf{r}-\mathbf{\Delta r}) \, \textrm{d}\mathbf{r},
+			\Gamma_u(\mathbf{\Delta r})= \lim\limits_{D_x,D_y\to\infty} \frac{1}{D_x D_y} \int\limits_{-D_x/2}^{D_x/2} \int\limits_{-D_y/2}^{D_y/2} u (\mathbf{r}) u (\mathbf{r}-\mathbf{\Delta r}) \, \textrm{d}x \textrm{d}y,
 		\end{equation}$$
-		where the limits of integration extend to \(\pm\infty\) in both \(\mathbf{r}\) coordinates. The 2-D case has the same interesting properties as the 1-D case above. In 2-D, a window function (sometimes called a mask in 2-D) has a value of 1 inside a finite region of 2-D space and 0 elsewhere. In optics, this might describe the transmittance of an aberration-free aperture. 
+		where the \(D_x\) and \(D_y\) are spatial extents in the \(x\) and \(y\) directions. Again, in 2-D, we focus on the integral with infinite limits and develop the same interesting properties as the 1-D case above. In 2-D, a window function (sometimes called a mask in 2-D) has a value of 1 inside a finite region of 2-D space and 0 elsewhere. In optics, this might describe the transmittance of an aberration-free aperture. 
 		</p>
 		
 		<p>
 		Let's use \(W(\mathbf{r}) = W(x,y)\) to denote a spatial window.
-		Like above, a window's auto-correlation can be evaluated using Fourier transforms according to
+		Like above, a window's auto-correlation integral can be evaluated using Fourier transforms according to
 		$$
-		\Gamma_w\left(\mathbf{\Delta r}\right) = \mathcal{F}^{-1} \left\{ \left\vert
+		\mathcal{A}\left(\mathbf{\Delta r}\right) = \mathcal{F}^{-1} \left\{ \left\vert
 		\mathcal{F}\left\{W\left(\mathbf{r}\right)\right\} \right\vert^2 \right\}.
 		$$
 		</p>
 		
 		<p>
-		At this point, we can calculate the correlation's value at \(\mathbf{r} = \mathbf{0}\), given by
+		At this point, we can calculate the integral's value at \(\mathbf{r} = \mathbf{0}\), given by
 		$$\begin{equation}
-			\Gamma_w(\mathbf{\Delta r}=\mathbf{0})=\int W (\mathbf{r}) W (\mathbf{r}) \, \textrm{d}\mathbf{r} = \int W (\mathbf{r}) \, \textrm{d}\mathbf{r} = A,
+			\mathcal{A}(\mathbf{\Delta r}=\mathbf{0})=\int W (\mathbf{r}) W (\mathbf{r}) \, \textrm{d}\mathbf{r} = \int W (\mathbf{r}) \, \textrm{d}\mathbf{r} = A,
 		\end{equation}$$
 		where \(A\) is the area of the window.  This property was used in Section 3.2 of the book to remove the effect of the window and isolate the cross-correlation of two signals in the function <span class="code">corr2_ft</span>.
 		</p>
@@ -151,11 +151,11 @@
 		Note that in the book, \(D\) is the full width of the rect function, and its area is \(D^2\).  This window's correlation is given by
 		$$
 		\begin{align}
-			\Gamma_W(\Delta x, \Delta y) &= \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} W(x,y) W(x-\Delta x, y-\Delta y)  \, \textrm{d}x \textrm{d}y \\
+			\mathcal{A}(\Delta x, \Delta y) &= \int\limits_{-\infty}^{\infty} \int\limits_{-\infty}^{\infty} W(x,y) W(x-\Delta x, y-\Delta y)  \, \textrm{d}x \textrm{d}y \\
 			&= D^2 \textrm{tri} \left(\frac{\Delta x}{D}\right) \textrm{tri} \left(\frac{\Delta y}{D}\right).
 		\end{align}
 		$$
-		Its peak occurs at \(\Delta x=0, \Delta y=0\).  This peak value is \(D^2\), which is equal to the area of the window.  Also, note the window has nonzero values for the region \(-D/2 < x < D/2\) and \(-D/2 < y < D/2\), while the window's auto-correlation has nonzero values for \(-D < x < D\) and \(-D < y < D\).  These two properties of the peak value and nonzero region are fairly general for the auto-correlation of window functions.
+		Its peak occurs at \(\Delta x=0, \Delta y=0\).  This peak value is \(D^2\), which is equal to the area of the window.  Also, note the window has nonzero values for the region \(-D/2 < x < D/2\) and \(-D/2 < y < D/2\), while the window's auto-correlation integral has nonzero values for \(-D < x < D\) and \(-D < y < D\).  These two properties of the peak value and nonzero region are fairly general for the auto-correlation integral of window functions.
 		</p>
 		
 		<p>
@@ -163,44 +163,44 @@
 		$$\begin{equation}
 			W(\mathbf{r}) = \textrm{circ}\left(\frac{r}{D}\right).
 		\end{equation}$$
-		Its correlation is given by
+		Its correlation integral is given by
 		$$\begin{equation}
-			\Gamma_W(\mathbf{r})= \frac{\pi D^2}{4} \frac{2}{\pi} \left[\cos^{-1}\left(\frac{r}{D}\right) - \left(\frac{r}{D}\right) \sqrt{1-\left(\frac{r}{D}\right)^2}\right].
+			\mathcal{A}(\mathbf{r})= \frac{\pi D^2}{4} \frac{2}{\pi} \left[\cos^{-1}\left(\frac{r}{D}\right) - \left(\frac{r}{D}\right) \sqrt{1-\left(\frac{r}{D}\right)^2}\right].
 		\end{equation}$$
-		The peak value occurs at \(\mathbf{r} = \mathbf{0}\) and is equal to \(\pi D^2/4\), which is the area of the circular window.  The window has nonzero values for \(0 < r < D/2\), and its auto-correlation has nonzero values for \(0 < r < D\).
+		The peak value occurs at \(\mathbf{r} = \mathbf{0}\) and is equal to \(\pi D^2/4\), which is the area of the circular window.  The window has nonzero values for \(0 < r < D/2\), and its auto-correlation integral has nonzero values for \(0 < r < D\).
 		</p>
 		
 		<h2>Discrete Correlation of 1-D Window Functions</h2>
 		<p>
-		In the book, I try to use continuous functions as much as possible.  At some point, though, it is necessary to analyze the discrete calculations that actually occur in computers. In this case, we have an array of random variables \(u_n\), where \(n\) is the integer time index, the time between successive samples is \(\Delta t\), and the discrete time values are \(t_n = n \Delta t\). There are various conventions for the range of index \(n\), like \(0\) to \(N-1\) and \(-N/2\) to \(N/2-1\), where \(N\) is the number of samples in array \(u_n\). Because I work with spatial variables most often, I usually let \(n\) take on values from \(-N/2\) to \(N/2-1\). With this in mind, the discrete correlation of \(u_n\) is given by
+		In the book, I try to use continuous functions as much as possible.  At some point, though, it is necessary to analyze the discrete calculations that actually occur in computers. In this case, we have an array of random variables \(u_n\), where \(n\) is the integer time index, the time between successive samples is \(\Delta t\), and the discrete time values are \(t_n = n \Delta t\). There are various conventions for the range of index \(n\), like \(0\) to \(N-1\) and \(-N/2\) to \(N/2-1\), where \(N\) is the number of samples in array \(u_n\). Because I work with spatial variables most often, I usually let \(n\) take on values from \(-N/2\) to \(N/2-1\). With this in mind, the discrete correlation sum of \(u_n\) is given by
 		$$\begin{equation}
-			\Gamma_{u}\left(m\right) = 
+			\mathcal{A}\left(m\right) = 
 			\begin{cases}
 				\sum\limits_{n=-N/2}^{N/2-m-1} \, u_{n} \, u_{n-m}, & \quad m\geq0 \\
-				\Gamma_{u}\left(-m\right), & \quad m < 0
+				\mathcal{A}\left(-m\right), & \quad m < 0
 			\end{cases}.
 		\end{equation}$$
-		This form is like a Riemann sum for the correlation integral above. The expression here is a sum over time steps, rather than an integral over a continuous time variable. The index \(m\) is the integer time lag index, and the corresponding time lag is \(m \Delta t\). There are \(N\) time samples, so there are \(N\) nonzero lags \(m\), which is the top case above. The bottom case comprises \(N-1\) lags, for a total of \(2N-1\) values in \(\Gamma_u\left(m\right)\).
+		This form is like a Riemann sum for the correlation integral above. The expression here is a sum over time steps, rather than an integral over a continuous time variable. The index \(m\) is the integer lag index, and the corresponding time lag is \(m \Delta t\). There are \(N\) time samples, so there are \(N\) nonzero lags \(m\), which is the top case above. The bottom case comprises \(N-1\) lags, for a total of \(2N-1\) values in \(\mathcal{A}\left(m\right)\).
 		</p>
 		
 		<p>
-		Let \(w_n\) be a 1-D window function that has \(N_{nz}\) nonzero values in it. In computing the discrete correlation above for this window, consider \(\Gamma_{w}\left(0\right)\). Its value is
+		Let \(W_n\) be a 1-D discrete window that has \(N_{nz}\) nonzero values in it. In computing the discrete correlation above for this window, consider \(\mathcal{A}\left(0\right)\). Its value is
 		$$\begin{equation}
-			\Gamma_{w}\left(0\right) = \sum\limits_{n=-N/2}^{N/2-1} \, w_{n}^2 = N_{nz}.
+			\mathcal{A}\left(0\right) = \sum\limits_{n=-N/2}^{N/2-1} \, w_{n}^2 = N_{nz}.
 		\end{equation}$$
-		The sum equals \(N_{nz}\) because the window values \(w_n\) are either \(0\) or \(1\). \(N_{nz}\) values are equal to \(1\), while \(N-N_{nz}\) values are equal to \(0\). This is the peak value of the window's correlation sum. The sum for all other values of \(m\) is less than \(N_{nz}\).
+		The sum equals \(N_{nz}\) because the window values \(W_n\) are either \(0\) or \(1\). \(N_{nz}\) values are equal to \(1\), while \(N-N_{nz}\) values are equal to \(0\). This is the peak value of the window's correlation sum. The sum for all other values of \(m\) is less than \(N_{nz}\).
 		</p>
 		
 		<p>
 		For 1-D signals, this discrete correlation can be calculated using Matlab's function <span class="code">xcorr</span>. However, the documentation for <span class="code">xcorr</span> describes a slightly different form given by
 		$$\begin{equation}
-			\Gamma_{u}\left(m\right) =
+			\mathcal{A}\left(m\right) =
 			\begin{cases}
 				\sum\limits_{n=0}^{N-m-1} \, u_{n+m} \, u_{m}, & \quad m\geq0 \\
-				\Gamma_u\left(-m\right), & \quad m < 0
+				\mathcal{A}\left(-m\right), & \quad m < 0
 			\end{cases}.
 		\end{equation}$$
-		There are two changes in this second version of the correlation sum. First, the time index \(n\) runs from \(0\) to \(N-1\), which makes sense. In programming languages, arrays do not have negative indices. However, Matlab uses 1-based indexing for its arrays, so in Matlab code the array indices are numbered \(1\) to \(N\). Second, the subscript of the second factor in the sum \(n+m\), rather than \(n-m\). This has no effect because we just need the difference between the two indices to be \(m\), due to symmetry in the correlation.
+		There are two changes in this second version of the correlation sum. First, the time index \(n\) runs from \(0\) to \(N-1\), which makes sense. In programming languages, arrays do not have negative indices. However, Matlab uses 1-based indexing for its arrays, so in Matlab code the array indices are numbered \(1\) to \(N\). Second, the subscript of the second factor in the sum \(n+m\), rather than \(n-m\). This has no effect because we just need the difference between the two indices to be \(m\), due to symmetry in the correlation sum.
 		</p>
 		
 		This article discusses only auto-correlation, but <span class="code">xcorr</span> can compute a cross-correlation if two signals are provided as the first two arguments. A full discussion of <span class="code">xcorr</span> is beyond the scope of this article, but I provide a more detailed description with examples in <a href="corrCode.html">Improved Correlation Code</a>. To compute this discrete correlation sum in Matlab use, 
@@ -210,7 +210,7 @@
 		</p>
 		
 		<p>
-		Here is an example of the correlation sum with a rectangular window. The window is the variable w, and it has 10 samples. Only the four central values are nonzero. The output is shown below the code.
+		Here is an example of the correlation sum with a rectangular window. The window is the variable <span class="code">w</span>, and it has 10 samples. Only the four central values are nonzero. The output is shown below the code.
 			
   <div class="content"><pre class="codeinput">
 1  <span class="comment">% corrRectWindow1D.m</span>
@@ -270,10 +270,10 @@ wXCorr =
 		<p>
 		In optics, we often work with 2-D arrays of data from cameras, wavefront sensors, and the like. Fortunately, the development of the previous section generalizes to 2-D in a straightforward way. With that in mind, the 2-D discrete correlation sum is given by
 		$$\begin{equation}
-			\Gamma_u\left(m,n\right) = 
+			\mathcal{A}\left(m,n\right) = 
 			\begin{cases}
 				\sum\limits_{i=0}^{N-m-1} \sum\limits_{j=0}^{N-n-1} \, u_{i+m,j+n} \, u_{i,j}, & \quad m\geq0 \\
-			\Gamma_u\left(-m,-n\right), & \quad m < 0.
+			\mathcal{A}\left(-m,-n\right), & \quad m < 0.
 			\end{cases}
 		\end{equation}$$
 		</p>
@@ -287,7 +287,7 @@ wXCorr =
 		</p>
 		
 		<p>
-		Here is an example of its usage that is similar to the 1-D examples of <span class="code">xcorr</span> above. The code below is followed by the resulting command-line output and figures. This example shows both the usage of <span class="code">xcorr2</span> function and a <abbr title = "Fourier transform">FT</abbr>-based calculation. There are a few key differences to note. Note that the output of <span class="code">xcorr2</span> has \(2N-1\) rows and \(2M-1\) columns, as expected. For the <abbr title = "Fourier transform">FT</abbr>-based calculation, the user needs to pad the input arrays to have \(2N\) rows and \(2M\) columns. The prevents a circular correlation from being calculated. As a result, the output of the <abbr title = "Fourier transform">FT</abbr>-based calculation has \(2N\) rows and \(2M\) columns, rather than \(2N-1\) rows and \(2M-1\) columns.
+		Here is an example of its usage that is similar to the 1-D examples of <span class="code">xcorr</span> above. The code below is followed by the resulting command-line output and figures. This example shows both the usage of <span class="code">xcorr2</span> function and a <abbr title = "Fourier transform">FT</abbr>-based calculation. There are a few key differences to note: The output of <span class="code">xcorr2</span> has \(2N-1\) rows and \(2M-1\) columns, as expected. For the <abbr title = "Fourier transform">FT</abbr>-based calculation, the user needs to pad the input arrays to have \(2N\) rows and \(2M\) columns. The prevents a circular correlation from being calculated. As a result, the output of the <abbr title = "Fourier transform">FT</abbr>-based calculation has \(2N\) rows and \(2M\) columns, rather than \(2N-1\) rows and \(2M-1\) columns.
 		</p>
 
 <div class="content"><pre class="codeinput">

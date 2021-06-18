@@ -78,17 +78,18 @@
 		</p>
 		
 		<p>
-		This article is not concerned with evaluating the integral for random processes. Instead, that topic is addressed in <a href="corrCode.html">Improved Correlation Code</a>. When the integrand is the product of two window functions, we denote the integral (with infinite limits) as \(\mathcal{A}\), and it has interesting properties, beginning with
+		This article is not concerned with evaluating the integral for random processes. Instead, that topic is addressed in <a href="corrCode.html">Improved Correlation Code</a>. When the integrand is the product of two window functions, we denote the integral (with infinite limits) as \(\mathcal{A}\), and it is given by
 		$$
-		\begin{align}
-			\mathcal{A}\left(\tau\right) &= \int\limits_{-\infty}^{\infty} W\left(t\right) W\left(t-\tau\right) \, \textrm{d}t \\
-			&= \int\limits_{-\infty}^{\infty} W\left(t\right) W\left(t-\tau\right) \, \textrm{d}t
-		\end{align}
+		\begin{equation}
+			\mathcal{A}\left(\tau\right) = \int\limits_{-\infty}^{\infty} W\left(t\right) W\left(t-\tau\right) \, \textrm{d}t.
+		\end{equation}
 		$$
-		since the window function \(W\left(t\right)\) is nonzero over a finite time period. Also, this can be evaluated using Fourier transforms according to
+		It can be evaluated using Fourier transforms according to
 		$$
-		\mathcal{A}\left(\tau\right) = \mathcal{F}^{-1} \left\{ \left\vert
-		\mathcal{F}\left\{W\left(t\right)\right\} \right\vert^2 \right\}.
+		\begin{equation}
+			\mathcal{A}\left(\tau\right) = \mathcal{F}^{-1} \left\{ \left\vert
+			\mathcal{F}\left\{W\left(t\right)\right\} \right\vert^2 \right\}.
+		\end{equation}
 		$$
 		</p>
 		

@@ -61,9 +61,9 @@
 		<p>
 		It can be useful to generate random draws of correlated processes. These can provide an input with known statistics for sensor models, estimation algorithms, control systems, etc. This article provides an introduction to the process, which also serves as background for generating phase screens, as described in Section 9.3. In particular, this article focuses on one-dimensional (<abbr title = "One-Dimensional">1-D</abbr>) processes with 
 		a Gaussian probability density function (<abbr title = "Probability Density Function">PDF</abbr>).
-		<p>
-		
 		</p>
+		
+		<p>
 		Gaussian random variables have the property that weighted sums of Gaussian variables still have a Gaussian <abbr title = "Probability Density Function">PDF</abbr>. For example, let \(u_i\) be a set of \(N\) Gaussian random variables that are <abbr title = "Probability Density Function">PDF</abbr>, with <abbr title = "Independent and Identically Distributed">IID</abbr> given by
 		<!-- Do they have to be IID?  Check Goodman. -->
 		$$
@@ -83,6 +83,8 @@
 			p\left(v\right) = \frac{1}{\sqrt{2 \pi \sigma_v^2}} \exp\left[-\frac{\left(v-\mu_v\right)^2}{2\sigma_v^2}\right]
 		\end{equation}
 		$$
+		</p>
+		<!--
 		<p>
 		\(\mu_v\) in terms of \(a_i\) and \(\mu_{ui}\)
 		</p>
@@ -104,6 +106,7 @@
 		<p>
 		If we know the covariance, we also know the PSD, In optical turbulence, we most often know the PSD, so focus on this method. Explain in terms of code. Show example usage with plots of PDF, mean, and covariance.
 		</p>
+		-->
 	</div>
 
 	<div class="footer">

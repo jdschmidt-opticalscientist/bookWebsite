@@ -104,103 +104,106 @@
 		
 		<div class="content">
 			<pre class="codeinput">
-clear <span class="string">variables</span>; close <span class="string">all</span>; clc;
-
-M = 32; <span class="comment">% number of grid points</span>
-Lt = 2.7;  <span class="comment">% grid size [m]</span>
-dt = Lt/M; <span class="comment">% grid spacing [m]</span>
-t = (-M/2 : M/2-1) * dt;
-mLags = (-(M-1) : (M-1)); <span class="comment">% lag index for xcorr</span>
-t2 = mLags * dt; <span class="comment">% sample times [s]</span>
-
-<span class="comment">% set up theoretical covariance:</span>
-w = 10*dt; <span class="comment">% width parameter for Gaussian covariance [m]</span>
-varTh = 2.3; <span class="comment">% variance</span>
-corrTh = varTh * exp(-pi*t2.^2/w^2); <span class="comment">% covariance</span>
-
-<span class="comment">% set up theoretical PSD:</span>
-df = 1/Lt;   <span class="comment">% frequency grid spacing [1/m]</span>
-f = (-M/2 : M/2-1) * df;
-psdThFcn = @(F) varTh * w*exp(-pi*F.^2*w^2);
-psdTh = psdThFcn(f);
-vThPSD = trapz(f, psdTh); <span class="comment">% check PSD's variance</span>
-
-NR = 5000; <span class="comment">% number of random draws</span>
-
-<span class="comment">% allocate space for correlation variables:</span>
-rNone = zeros(1, 2*M-1);
-rBiased = zeros(1, 2*M-1);
-rUnbiased = zeros(1, 2*M-1);
-gMean = 0;
-gMeanSqr = 0;
-<span class="comment">% for FT-based calculations:</span>
-gPad = zeros(1, 2*M); <span class="comment">% zero-padded array for g</span>
-dfBig = 1/(2*Lt);   <span class="comment">% frequency grid spacing for double-size g [1/m]</span>
-idxFill = (-M/2 : M/2-1) + M+1; <span class="comment">% indices of grBig to fill</span>
-mLagsFT = (-M : M-1); <span class="comment">% lag index for FT-based correlation</span>
-corrGBig = zeros(1, 2*M);
-<span class="keyword">for</span> idx = 1 : NR
-    <span class="comment">% generate random process:</span>
-    [phz_lo, phz_hi] = ftShGaussianProc1(2*M, dt, psdThFcn);
-    g = phz_lo + phz_hi;
-    g = g(1:M).';
-
-    <span class="comment">% compute auto-correlation with xcorr &amp; various options:</span>
-    rNone = rNone + xcorr(g, <span class="string">'none'</span>)/NR; <span class="comment">% default</span>
-    rBiased = rBiased + xcorr(g, <span class="string">'biased'</span>)/NR;
-    rUnbiased = rUnbiased + xcorr(g, <span class="string">'unbiased'</span>)/NR;
-
-    <span class="comment">% use correlation theorem; be sure to pad with zeros:</span>
-    gPad(idxFill) = g; <span class="comment">% fill center of gPad</span>
-    ftGBig = ft(gPad, dt); <span class="comment">% g in frequency domain</span>
-    <span class="comment">% compute auto-correlation:</span>
-    corrGBig = corrGBig + ift(abs(ftGBig).^2, dfBig)/NR;
-<span class="keyword">end</span>
-
-<span class="comment">% plots</span>
-
-<span class="comment">% different normalizations:</span>
-f1 = figure(1); clf;
-set(f1, <span class="string">'OuterPosition'</span>, [672 128 920 835]);
-tiledlayout(2, 2, <span class="string">'TileSpacing'</span>, <span class="string">'compact'</span>, <span class="string">'Padding'</span>, <span class="string">'compact'</span>);
-
-nexttile([1 2]); <span class="comment">% span two columns</span>
-<span class="comment">% plot the random draw:</span>
-plot(t, g, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1.5);
-grid <span class="string">on</span>;
-xlabel({<span class="string">'Time [sec]'</span>; <span class="string">'(a)'</span>});
-ylabel(<span class="string">'Signal Realization'</span>);
-nexttile;
-plot(t2, corrTh, <span class="string">'k'</span>, t2, rNone/M, <span class="string">'r--'</span>, t2, rBiased, <span class="string">'g:'</span>, <span class="keyword">...</span>
-    <span class="string">'LineWidth'</span>, 1.5);
-grid <span class="string">on</span>;
-xlabel({<span class="string">'Time Lag [s]'</span>; <span class="string">'(b)'</span>});
-ylabel(<span class="string">'xcorr biased'</span>);
-legend(<span class="string">'Theory'</span>, <span class="string">'xcorr none / M'</span>, <span class="string">'xcorr biased'</span>, <span class="keyword">...</span>
-    <span class="string">'location'</span>, <span class="string">'NorthEast'</span>);
-<span class="comment">% unbiased correlation:</span>
-nexttile;
-plot(t2, corrTh, <span class="string">'k'</span>, t2, rUnbiased, <span class="string">'r--'</span>, <span class="keyword">...</span>
-    t2, rNone./(M-abs(mLags)), <span class="string">'g:'</span>, <span class="string">'LineWidth'</span>, 1.5);
-grid <span class="string">on</span>;
-xlabel({<span class="string">'Time Lag [s]'</span>; <span class="string">'(c)'</span>});
-ylabel(<span class="string">'xcorr unbiased'</span>);
-legend(<span class="string">'Theory'</span>, <span class="string">'xcorr Unbiased'</span>, <span class="string">'xcorr none / (M - |m|)'</span>, <span class="keyword">...</span>
-    <span class="string">'location'</span>, <span class="string">'NorthEast'</span>);
-
-<span class="comment">% export figure to file in PNG format:</span>
-exportgraphics(f1, <span class="string">'checkXcorr.png'</span>);
-
-<span class="comment">% unbiased with FT:</span>
-f2 = figure(2); clf;
-plot(t2, corrTh, <span class="string">'k'</span>, t2, rUnbiased, <span class="string">'r--'</span>, <span class="keyword">...</span>
-    mLagsFT*dt, corrGBig/Lt*M./(M-abs(mLagsFT)), <span class="string">'g-.'</span>, <span class="string">'LineWidth'</span>, 1.5);
-grid(<span class="string">'on'</span>);
-xlabel(<span class="string">'Time Lag [s]'</span>)
-legend(<span class="string">'Theory'</span>, <span class="string">'xcorr Unbiased'</span>, <span class="string">'FT Corr Pad'</span>);
-
-<span class="comment">% export figure to file in PNG format:</span>
-exportgraphics(f2, <span class="string">'xCorrFT.png'</span>);
+1  <span class="comment">% checkXcorr.m</span>
+2
+3  clear <span class="string">variables</span>; close <span class="string">all</span>; clc;
+4
+5  M = 32; <span class="comment">% number of grid points</span>
+6  Lt = 2.7;  <span class="comment">% grid size [m]</span>
+7  dt = Lt/M; <span class="comment">% grid spacing [m]</span>
+8  t = (-M/2 : M/2-1) * dt;
+9  mLags = (-(M-1) : (M-1)); <span class="comment">% lag index for xcorr</span>
+10 t2 = mLags * dt; <span class="comment">% sample times [s]</span>
+11
+12 <span class="comment">% set up theoretical covariance:</span>
+13 w = 10*dt; <span class="comment">% width parameter for Gaussian covariance [m]</span>
+14 varTh = 2.3; <span class="comment">% variance</span>
+15 corrTh = varTh * exp(-pi*t2.^2/w^2); <span class="comment">% covariance</span>
+16
+17 <span class="comment">% set up theoretical PSD:</span>
+18 df = 1/Lt;   <span class="comment">% frequency grid spacing [1/m]</span>
+19 f = (-M/2 : M/2-1) * df;
+20 psdThFcn = @(F) varTh * w*exp(-pi*F.^2*w^2);
+21 psdTh = psdThFcn(f);
+22 vThPSD = trapz(f, psdTh); <span class="comment">% check PSD's variance</span>
+23
+24 NR = 5000; <span class="comment">% number of random draws</span>
+25
+26 <span class="comment">% allocate space for correlation variables:</span>
+27 rNone = zeros(1, 2*M-1);
+28 rBiased = zeros(1, 2*M-1);
+29 rUnbiased = zeros(1, 2*M-1);
+30 gMean = 0;
+31 gMeanSqr = 0;
+32 <span class="comment">% for FT-based calculations:</span>
+33 gPad = zeros(1, 2*M); <span class="comment">% zero-padded array for g</span>
+34 dfBig = 1/(2*Lt);   <span class="comment">% frequency grid spacing for double-size g [1/m]</span>
+35 idxFill = (-M/2 : M/2-1) + M+1; <span class="comment">% indices of grBig to fill</span>
+36 mLagsFT = (-M : M-1); <span class="comment">% lag index for FT-based correlation</span>
+37 corrGBig = zeros(1, 2*M);
+38 <span class="keyword">for</span> idx = 1 : NR
+39     <span class="comment">% generate random process:</span>
+40     [phz_lo, phz_hi] = ftShGaussianProc1(2*M, dt, psdThFcn);
+41     g = phz_lo + phz_hi;
+42     g = g(1:M).';
+43
+44     <span class="comment">% compute auto-correlation with xcorr &amp; various options:</span>
+45     rNone = rNone + xcorr(g, <span class="string">'none'</span>)/NR; <span class="comment">% default</span>
+46     rBiased = rBiased + xcorr(g, <span class="string">'biased'</span>)/NR;
+47     rUnbiased = rUnbiased + xcorr(g, <span class="string">'unbiased'</span>)/NR;
+48
+49     <span class="comment">% use correlation theorem; be sure to pad with zeros:</span>
+50     gPad(idxFill) = g; <span class="comment">% fill center of gPad</span>
+51     ftGBig = ft(gPad, dt); <span class="comment">% g in frequency domain</span>
+52     <span class="comment">% compute auto-correlation:</span>
+53     corrGBig = corrGBig + ift(abs(ftGBig).^2, dfBig)/NR;
+54 <span class="keyword">end</span>
+55
+56 <span class="comment">% plots</span>
+57
+58 <span class="comment">% different normalizations:</span>
+59 f1 = figure(1); clf;
+60 set(f1, <span class="string">'OuterPosition'</span>, [672 128 920 835]);
+61 tiledlayout(2, 2, <span class="string">'TileSpacing'</span>, <span class="string">'compact'</span>, <span class="string">'Padding'</span>, <span class="string">'compact'</span>);
+62 
+63 nexttile([1 2]); <span class="comment">% span two columns</span>
+64 <span class="comment">% plot the random draw:</span>
+65 plot(t, g, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1.5);
+66 grid <span class="string">on</span>;
+67 xlabel({<span class="string">'Time [sec]'</span>; <span class="string">'(a)'</span>});
+68 ylabel(<span class="string">'Signal Realization'</span>);
+69 nexttile;
+70 plot(t2, corrTh, <span class="string">'k'</span>, t2, rNone/M, <span class="string">'r--'</span>, t2, rBiased, <span class="string">'g:'</span>, <span class="keyword">...</span>
+71    <span class="string">'LineWidth'</span>, 1.5);
+72 grid <span class="string">on</span>;
+73 xlabel({<span class="string">'Time Lag [s]'</span>; <span class="string">'(b)'</span>});
+74 ylabel(<span class="string">'xcorr biased'</span>);
+75 legend(<span class="string">'Theory'</span>, <span class="string">'xcorr none / M'</span>, <span class="string">'xcorr biased'</span>, <span class="keyword">...</span>
+76     <span class="string">'location'</span>, <span class="string">'NorthEast'</span>);
+77 <span class="comment">% unbiased correlation:</span>
+78 nexttile;
+79 plot(t2, corrTh, <span class="string">'k'</span>, t2, rUnbiased, <span class="string">'r--'</span>, <span class="keyword">...</span>
+80    t2, rNone./(M-abs(mLags)), <span class="string">'g:'</span>, <span class="string">'LineWidth'</span>, 1.5);
+81 grid <span class="string">on</span>;
+82 xlabel({<span class="string">'Time Lag [s]'</span>; <span class="string">'(c)'</span>});
+83 ylabel(<span class="string">'xcorr unbiased'</span>);
+84 legend(<span class="string">'Theory'</span>, <span class="string">'xcorr Unbiased'</span>, <span class="string">'xcorr none / (M - |m|)'</span>, <span class="keyword">...</span>
+85    <span class="string">'location'</span>, <span class="string">'NorthEast'</span>);
+86 
+87 <span class="comment">% export figure to file in PNG format:</span>
+88 exportgraphics(f1, <span class="string">'checkXcorr.png'</span>);
+89 
+90 <span class="comment">% unbiased with FT:</span>
+91 f2 = figure(2); clf;
+92 plot(t2, corrTh, <span class="string">'k'</span>, t2, rUnbiased, <span class="string">'r--'</span>, <span class="keyword">...</span>
+93     mLagsFT*dt, corrGBig/Lt*M./(M-abs(mLagsFT)), <span class="string">'g-.'</span>, <span class="string">'LineWidth'</span>, 1.5);
+94 grid(<span class="string">'on'</span>);
+95 xlabel(<span class="string">'Time Lag [s]'</span>);
+96 ylabel(<span class="string">'Auto-Correlation'</span>);
+97 legend(<span class="string">'Theory'</span>, <span class="string">'xcorr Unbiased'</span>, <span class="string">'FT Corr Pad'</span>);
+98
+99 <span class="comment">% export figure to file in PNG format:</span>
+100 exportgraphics(f2, <span class="string">'xCorrFT.png'</span>);
 </pre><img vspace="5" hspace="5" src="checkXcorr_01.png" alt=""> <img vspace="5" hspace="5" src="checkXcorr_02.png" alt="">			</pre>		
 		
 			<img width=500px src="checkXcorr.png" />

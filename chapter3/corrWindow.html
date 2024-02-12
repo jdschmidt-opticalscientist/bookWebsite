@@ -78,7 +78,7 @@
 		</p>
 		
 		<p>
-		This article is not concerned with evaluating the integral for random processes. Instead, that topic is addressed in <a href="corrCode.html">Improved Correlation Code</a>. When the integrand is the product of two window functions, we denote the integral (with infinite limits) as \(\mathcal{A}\), and it is given by
+		This article is not concerned with evaluating the integral for random processes. Instead, that topic is addressed in <a href="corrUnbiased1D.html">Unbiased Correlation of 1-D Random Processes</a>. When the integrand is the product of two window functions, we denote the integral (with infinite limits) as \(\mathcal{A}\), and it is given by
 		$$
 		\begin{equation}
 			\mathcal{A}\left(\tau\right) = \int\limits_{-\infty}^{\infty} W\left(t\right) W\left(t-\tau\right) \, \textrm{d}t.
@@ -204,7 +204,7 @@
 		There are two changes in this second version of the correlation sum. First, the time index \(n\) runs from \(0\) to \(N-1\), which makes sense. In programming languages, arrays do not have negative indices. However, Matlab uses 1-based indexing for its arrays, so in Matlab code the array indices are numbered \(1\) to \(N\). Second, the subscript of the second factor in the sum \(n+m\), rather than \(n-m\). This has no effect because we just need the difference between the two indices to be \(m\), due to symmetry in the correlation sum.
 		</p>
 		
-		This article discusses only auto-correlation, but <span class="code">xcorr</span> can compute a cross-correlation if two signals are provided as the first two arguments. A full discussion of <span class="code">xcorr</span> is beyond the scope of this article, but I provide a more detailed description with examples in <a href="corrCode.html">Improved Correlation Code</a>. To compute this discrete correlation sum in Matlab use, 
+		This article discusses only auto-correlation, but <span class="code">xcorr</span> can compute a cross-correlation if two signals are provided as the first two arguments. A full discussion of <span class="code">xcorr</span> is beyond the scope of this article, but I provide a more detailed description with examples in <a href="corrUnbiased1D.html">Unbiased Correlation of 1-D Random Processes</a>. To compute this discrete correlation sum in Matlab use, 
 		<div class="content">
 			<pre class="codeinput">Gamma = xcorr(w);</pre>
 		</div>

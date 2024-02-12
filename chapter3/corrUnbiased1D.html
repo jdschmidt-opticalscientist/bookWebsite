@@ -1,0 +1,221 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+
+<head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+	<link rel="stylesheet" type="text/css" href="../matlab.css" /> 	  
+	<link rel="stylesheet" type="text/css" href="../mainPage.css" />
+
+	<title>Chapter 3: Simple Computations Using Fourier Transforms</title>
+
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</head>
+
+<body>
+	<div class="header">
+	<table>
+		<tr>
+		<td align="left" align="140">
+			<img class="bookImg" src="../PM199-245.jpg" />
+		</td>
+		<td align=center>
+		<h1>Chapter 3: Simple Computations Using Fourier Transforms</h1>
+		</td>
+		</table>
+	</div>
+
+	<div class="text">
+		<!-- Vertical navigation bar on right side -->
+		<div id="right_nav_box">
+			<ul>
+				<li><a href="../index.html">Home</a>
+				<li><a href="../chapter1/index.html">Chapter 1</a>
+				<li><a href="../chapter2/index.html">Chapter 2</a>
+				<li><a href="../chapter3/index.html">Chapter 3</a>
+				<li><a href="../chapter4/index.html">Chapter 4</a>
+				<li><a href="../chapter5/index.html">Chapter 5</a>
+				<li><a href="../chapter6/index.html">Chapter 6</a>
+				<li><a href="../chapter7/index.html">Chapter 7</a>
+				<li><a href="../chapter8/index.html">Chapter 8</a>
+				<li><a href="../chapter9/index.html">Chapter 9</a>
+			</ul>
+		</div>
+
+		<h1>Unbiased Correlation of 1-D Random Processes</h1>
+
+		<p>
+		In the years since I wrote the book, I have had many occasions to use the function <span class="code">corr2_ft</span>.  Here, I provide more detail about computing the correlation of samples from a 1-D random process. This provides background for the 2-D calculation. At the end, this is illustrated with a code example.
+		</p>
+
+		<p>
+		Correlation is a widely used analysis tool.  Mostly, I use it for analyzing random signals that occur in optical systems that collect data through atmospheric turbulence.  For example, Section 9.5.5 in the book uses the ensemble average auto-correlation of the propagated field to verify that the turbulent wave-optics simulation exhibits the expected second-order field statistics.  Other random signals like wavefront gradients, Zernike mode coefficients, and irradiance fluctuations can be analyzed with correlation.  These can be 2-D spatial signals or 1-D temporal signals, depending on how they are measured.  As I mention in <a href="corrWindow.html">Correlation Integral with Window Functions</a>, Matlab provides the function  <span class="code">xcorr</span> to compute cross-correlations of 1-D functions.  I encourage everyone to read to the <span class="code">xcorr</span> documentation.  It is informative, particularly regarding the various normalization options.  The <span class="string">'unbiased'</span> option is particularly relevant here, and the function  <span class="code">corr2_ft</span> in Section 3.2 of the book provides an analogous calculation for removing the bias of a 2-D spatial mask that occurs often in optics.
+		</p>
+		In this article, I first describe the calculation of unbiased correlation in 1-D.  Then, I illustrate with an example that compares the output of the <span class="code">xcorr</span> function to a correlation computed manually with <abbr title = "Fourier transforms">FTs</abbr>.
+		<p>
+		
+		</p>
+		
+		<h2>Unbiased Correlation in 1-D</h2>
+		<p>
+		In <a href="statDefs.html">Some Statistical Definitions</a>, I write the correlation of an ergodic random process \(u\left(t\right)\) as
+		$$
+		\begin{equation}
+			\Gamma_u\left(\tau\right) = \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} u\left(t\right) u\left(t-\tau\right) \, \textrm{d}t.
+		\end{equation}
+		$$
+		In reality, we always observe the process \(u\left(t\right)\) over a finite period of time, described by a window function \(W\left(t\right)\). Accordingly, we can define a time-windowed function realization of the random process as \(u^{\prime}\left(t\right) = u\left(t\right) w\left(t\right)\). Thus, we always have the integral of the time-windowed realization
+		$$
+		\begin{equation}
+			I^{\prime}\left(\tau\right) = \int\limits_{-T/2}^{T/2} u^{\prime}\left(t\right) u^{\prime}\left(t-\tau\right) \, \textrm{d}t.
+		\end{equation}
+		$$
+		Assuming that \(T\) is longer than the window overlap, the integral can be written as
+		$$
+		\begin{equation}
+			I^{\prime}\left(\tau\right) = \int\limits_{W\left(t\right) W\left(t-\tau\right)} u\left(t\right) u\left(t-\tau\right) \, \textrm{d}t,
+		\end{equation}
+		$$
+		where the limits of integration are set by the nonzero duration of \(W\left(t\right) W\left(t-\tau\right)\). This has units of the random process squared \(\times\) time (seconds). To compute the average over the time window, we need to divide by the duration of the integration limits, which is \(\mathcal{A}\left(\tau\right)\) from Eq. (2) in <a href="corrWindow.html">Correlation Integral with Window Functions</a>. Then the best approximation to the statistical correlation that we can make from time-windowed samples is
+		$$
+		\begin{equation}
+			\Gamma_u\left(\tau\right) \simeq \left\langle \frac{I^{\prime}\left(\tau\right)} {\mathcal{A}\left(\tau\right)} \right\rangle.
+		\end{equation}
+		$$
+		In this equation, \(\left\langle \ldots \right\rangle\) still indicates an ensemble average, but not by integrating over the <abbr title = "Probability Density Function">PDF</abbr>. In this case, we have a finite collection of realizations of \(u\left(t\right)\), so we perform the integral \(I^{\prime}\left(\tau\right)\) for each realization, divide by \(\mathcal{A}\left(\tau\right)\), and average the results.
+		</p>
+		
+		<p>
+		The following code example generates random draws of time-correlated process and then computes the biased and unbiased auto-correlation of each realization and then computes the average auto-correlation. The random process is generated using the function <span class="code">ftShGaussianProc1</span> that I wrote (will post it with an explanation in the future). It uses a 1-D version of the phase-screen generation technique from my book. However in this case, it accepts a handle to a <abbr title = "Power Spectral Density">PSD</abbr> function.
+		</p>
+		
+		<p>
+		It first uses Matlab's <span class="code">xcorr</span> function with its various options. Then, it makes explicit use of the auto-correlation theorem with the <span class="code">ft</span> and <span class="code">ift</span> functions from my book. The plots demonstrate use of different normalizations with and without bias. Using the <span class="string">'unbiased'</span> option causes <span class="code">xcorr</span> to normalize by the number of samples for each lag. In the code, this is given by <span class="code">M-abs(mLags)</span>. In plot (b) of the first figure, <span class="code">xcorr</span> with the <span class="string">'none'</span> option divided by <span class="code">M</span> and <span class="code">xcorr</span> with the <span class="string">'biased'</span> option match each other, but they do not match the theoretical auto-correlation. That discrepancy is the statistical bias. The mismatch is rectified in plot (c) with the <span class="string">'unbiased'</span> option, and equivalently, <span class="code">xcorr</span> with the <span class="string">'none'</span> option divided by the number of samples <span class="code">M-abs(mLags)</span> at each lag <span class="code">m</span>. The correct match between the sample-based calculations and the theoretical auto-correlation is evident in plot (c).
+		</p>
+		
+		<p>
+		It is important to note some subtleties in doing the <abbr title = "Fourier transforms">FT</abbr> correlation properly. First, the random process <span class="code">g</span> is zero-padded before doing the <abbr title = "Fourier transform">FT</abbr> operation. Second, in the line that makes the final plot, <span class="code">corrGBig</span> is divided by the grid spacing <span class="code">M/Lt</span> and divided by the number of samples <span class="code">M-abs(mLagsFT)</span>. The close match between the theoretical correlation, the unbiased <span class="code">xcorr</span> calculation, and the <abbr title = "Fourier transform">FT</abbr>-based calculation is shown in the last plot.
+		</p>
+		
+		<div class="content">
+			<pre class="codeinput">
+clear <span class="string">variables</span>; close <span class="string">all</span>; clc;
+
+M = 32; <span class="comment">% number of grid points</span>
+Lt = 2.7;  <span class="comment">% grid size [m]</span>
+dt = Lt/M; <span class="comment">% grid spacing [m]</span>
+t = (-M/2 : M/2-1) * dt;
+mLags = (-(M-1) : (M-1)); <span class="comment">% lag index for xcorr</span>
+t2 = mLags * dt; <span class="comment">% sample times [s]</span>
+
+<span class="comment">% set up theoretical covariance:</span>
+w = 10*dt; <span class="comment">% width parameter for Gaussian covariance [m]</span>
+varTh = 2.3; <span class="comment">% variance</span>
+corrTh = varTh * exp(-pi*t2.^2/w^2); <span class="comment">% covariance</span>
+
+<span class="comment">% set up theoretical PSD:</span>
+df = 1/Lt;   <span class="comment">% frequency grid spacing [1/m]</span>
+f = (-M/2 : M/2-1) * df;
+psdThFcn = @(F) varTh * w*exp(-pi*F.^2*w^2);
+psdTh = psdThFcn(f);
+vThPSD = trapz(f, psdTh); <span class="comment">% check PSD's variance</span>
+
+NR = 5000; <span class="comment">% number of random draws</span>
+
+<span class="comment">% allocate space for correlation variables:</span>
+rNone = zeros(1, 2*M-1);
+rBiased = zeros(1, 2*M-1);
+rUnbiased = zeros(1, 2*M-1);
+gMean = 0;
+gMeanSqr = 0;
+<span class="comment">% for FT-based calculations:</span>
+gPad = zeros(1, 2*M); <span class="comment">% zero-padded array for g</span>
+dfBig = 1/(2*Lt);   <span class="comment">% frequency grid spacing for double-size g [1/m]</span>
+idxFill = (-M/2 : M/2-1) + M+1; <span class="comment">% indices of grBig to fill</span>
+mLagsFT = (-M : M-1); <span class="comment">% lag index for FT-based correlation</span>
+corrGBig = zeros(1, 2*M);
+<span class="keyword">for</span> idx = 1 : NR
+    <span class="comment">% generate random process:</span>
+    [phz_lo, phz_hi] = ftShGaussianProc1(2*M, dt, psdThFcn);
+    g = phz_lo + phz_hi;
+    g = g(1:M).';
+
+    <span class="comment">% compute auto-correlation with xcorr &amp; various options:</span>
+    rNone = rNone + xcorr(g, <span class="string">'none'</span>)/NR; <span class="comment">% default</span>
+    rBiased = rBiased + xcorr(g, <span class="string">'biased'</span>)/NR;
+    rUnbiased = rUnbiased + xcorr(g, <span class="string">'unbiased'</span>)/NR;
+
+    <span class="comment">% use correlation theorem; be sure to pad with zeros:</span>
+    gPad(idxFill) = g; <span class="comment">% fill center of gPad</span>
+    ftGBig = ft(gPad, dt); <span class="comment">% g in frequency domain</span>
+    <span class="comment">% compute auto-correlation:</span>
+    corrGBig = corrGBig + ift(abs(ftGBig).^2, dfBig)/NR;
+<span class="keyword">end</span>
+
+<span class="comment">% plots</span>
+
+<span class="comment">% different normalizations:</span>
+f1 = figure(1); clf;
+set(f1, <span class="string">'OuterPosition'</span>, [672 128 920 835]);
+tiledlayout(2, 2, <span class="string">'TileSpacing'</span>, <span class="string">'compact'</span>, <span class="string">'Padding'</span>, <span class="string">'compact'</span>);
+
+nexttile([1 2]); <span class="comment">% span two columns</span>
+<span class="comment">% plot the random draw:</span>
+plot(t, g, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1.5);
+grid <span class="string">on</span>;
+xlabel({<span class="string">'Time [sec]'</span>; <span class="string">'(a)'</span>});
+ylabel(<span class="string">'Signal Realization'</span>);
+nexttile;
+plot(t2, corrTh, <span class="string">'k'</span>, t2, rNone/M, <span class="string">'r--'</span>, t2, rBiased, <span class="string">'g:'</span>, <span class="keyword">...</span>
+    <span class="string">'LineWidth'</span>, 1.5);
+grid <span class="string">on</span>;
+xlabel({<span class="string">'Time Lag [s]'</span>; <span class="string">'(b)'</span>});
+ylabel(<span class="string">'xcorr biased'</span>);
+legend(<span class="string">'Theory'</span>, <span class="string">'xcorr none / M'</span>, <span class="string">'xcorr biased'</span>, <span class="keyword">...</span>
+    <span class="string">'location'</span>, <span class="string">'NorthEast'</span>);
+<span class="comment">% unbiased correlation:</span>
+nexttile;
+plot(t2, corrTh, <span class="string">'k'</span>, t2, rUnbiased, <span class="string">'r--'</span>, <span class="keyword">...</span>
+    t2, rNone./(M-abs(mLags)), <span class="string">'g:'</span>, <span class="string">'LineWidth'</span>, 1.5);
+grid <span class="string">on</span>;
+xlabel({<span class="string">'Time Lag [s]'</span>; <span class="string">'(c)'</span>});
+ylabel(<span class="string">'xcorr unbiased'</span>);
+legend(<span class="string">'Theory'</span>, <span class="string">'xcorr Unbiased'</span>, <span class="string">'xcorr none / (M - |m|)'</span>, <span class="keyword">...</span>
+    <span class="string">'location'</span>, <span class="string">'NorthEast'</span>);
+
+<span class="comment">% export figure to file in PNG format:</span>
+exportgraphics(f1, <span class="string">'checkXcorr.png'</span>);
+
+<span class="comment">% unbiased with FT:</span>
+f2 = figure(2); clf;
+plot(t2, corrTh, <span class="string">'k'</span>, t2, rUnbiased, <span class="string">'r--'</span>, <span class="keyword">...</span>
+    mLagsFT*dt, corrGBig/Lt*M./(M-abs(mLagsFT)), <span class="string">'g-.'</span>, <span class="string">'LineWidth'</span>, 1.5);
+grid(<span class="string">'on'</span>);
+xlabel(<span class="string">'Time Lag [s]'</span>)
+legend(<span class="string">'Theory'</span>, <span class="string">'xcorr Unbiased'</span>, <span class="string">'FT Corr Pad'</span>);
+
+<span class="comment">% export figure to file in PNG format:</span>
+exportgraphics(f2, <span class="string">'xCorrFT.png'</span>);
+</pre><img vspace="5" hspace="5" src="checkXcorr_01.png" alt=""> <img vspace="5" hspace="5" src="checkXcorr_02.png" alt="">			</pre>		
+		
+			<img width=500px src="checkXcorr.png" />
+
+			<img width=500px src="xCorrFT.png" />
+		
+		</div>
+		
+	</div>
+
+	<div class="footer">
+		<br/>
+		<hr/>
+		<a href="../index.html">Home</a> | <a href="../aboutBook.html">About</a>
+	</div>
+
+</body>
+</html>

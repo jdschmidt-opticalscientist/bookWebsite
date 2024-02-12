@@ -1,0 +1,116 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+
+<head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!--<meta name="generator" content="MATLAB 9.7">-->
+	<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+	<meta name="DC.date" content="2020-08-12"><meta name="DC.source" content="checkXcorr.m">
+	<link rel="stylesheet" type="text/css" href="../matlab.css" /> 	  
+	<link rel="stylesheet" type="text/css" href="../mainPage.css" />
+
+	<title>Supplement 1:  Correlated Random Draws</title>
+
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+	
+	<script>
+		window.MathJax = {
+		  tex: {
+			tags: 'ams'
+		  }
+		};
+	</script>
+
+</head>
+
+<body>
+	<div class="header">
+	<table>
+		<tr>
+		<td align="left" align="140">
+			<img class="bookImg" src="../PM199-245.jpg" />
+		</td>
+		<td align=center>
+		<h1>Supplement 1:  Correlated Random Draws with Gaussian PDF</h1>
+		</td>
+		</table>
+	</div>
+
+	<div class="text">
+		<!-- Vertical navigation bar on right side -->
+		<div id="right_nav_box">
+			<ul>
+				<li><a href="../index.html">Home</a>
+				<li><a href="../chapter1/index.html">Chapter 1</a>
+				<li><a href="../chapter2/index.html">Chapter 2</a>
+				<li><a href="../chapter3/index.html">Chapter 3</a>
+				<li><a href="../chapter4/index.html">Chapter 4</a>
+				<li><a href="../chapter5/index.html">Chapter 5</a>
+				<li><a href="../chapter6/index.html">Chapter 6</a>
+				<li><a href="../chapter7/index.html">Chapter 7</a>
+				<li><a href="../chapter8/index.html">Chapter 8</a>
+				<li><a href="../chapter9/index.html">Chapter 9</a>
+			</ul>
+		</div>
+
+		<h1>1-D Processes</h1>
+		<p>
+		It can be useful to generate random draws of correlated processes. These can provide an input with known statistics for sensor models, estimation algorithms, control systems, etc. This article provides an introduction to the process, which also serves as background for generating phase screens, as described in Section 9.3. In particular, this article focuses on one-dimensional (<abbr title = "One-Dimensional">1-D</abbr>) processes with 
+		a Gaussian probability density function (<abbr title = "Probability Density Function">PDF</abbr>).
+		<p>
+		
+		</p>
+		Gaussian random variables have the property that weighted sums of Gaussian variables still have a Gaussian <abbr title = "Probability Density Function">PDF</abbr>. For example, let \(u_i\) be a set of \(N\) Gaussian random variables that are <abbr title = "Probability Density Function">PDF</abbr>, with <abbr title = "Independent and Identically Distributed">IID</abbr> given by
+		<!-- Do they have to be IID?  Check Goodman. -->
+		$$
+		\begin{equation}
+			p\left(u_i\right) = \frac{1}{\sqrt{2 \pi \sigma_{ui}^2}} \exp\left[-\frac{\left(u_i-\mu_{ui}\right)^2}{2\sigma_{ui}^2}\right],
+		\end{equation}
+		$$
+		where \(\mu_{ui}\) is the set of \(N\) mean values and \(\sigma_{ui}\) is the set of \(N\) variances. Also, let \(a_i\) be a set of \(N\) fixed numbers. Then, the sum
+		$$
+		\begin{equation}
+			v = \sum\limits_{i=i}^N a_i u_i,
+		\end{equation}
+		$$
+		also has a Gaussian <abbr title = "Probability Density Function">PDF</abbr> given by
+		$$
+		\begin{equation}
+			p\left(v\right) = \frac{1}{\sqrt{2 \pi \sigma_v^2}} \exp\left[-\frac{\left(v-\mu_v\right)^2}{2\sigma_v^2}\right]
+		\end{equation}
+		$$
+		<p>
+		\(\mu_v\) in terms of \(a_i\) and \(\mu_{ui}\)
+		</p>
+		<p>
+		\(\sigma_v\) in terms of \(a_i\) and \(\sigma_{ui}\)
+		</p>
+		<p>
+		This property extends to a set of \(N\) random values \(v_i\).  with covariance matrix of \(u_i\), \(\sum_u\)
+		</p>
+		
+		<p>
+		Joint PDF for two correlated random variables. Example of generating two correlated random variables.
+		</p>
+		
+		<p>
+		Joint PDF for \(N\) correlated random variables. R and W method with Cholesky decomposition.
+		</p>
+
+		<p>
+		If we know the covariance, we also know the PSD, In optical turbulence, we most often know the PSD, so focus on this method. Explain in terms of code. Show example usage with plots of PDF, mean, and covariance.
+		</p>
+	</div>
+
+	<div class="footer">
+		<br/>
+		<hr/>
+		<a href="../index.html">Home</a> | <a href="../aboutBook.html">About</a>
+	</div>
+
+</body>
+</html>

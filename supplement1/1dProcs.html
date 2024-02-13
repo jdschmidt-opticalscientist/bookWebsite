@@ -64,14 +64,13 @@
 		</p>
 		
 		<p>
-		Gaussian random variables have the property that weighted sums of Gaussian variables still have a Gaussian <abbr title = "Probability Density Function">PDF</abbr>. For example, let \(u_i\) be a set of \(N\) Gaussian random variables that are <abbr title = "Probability Density Function">PDF</abbr>, with <abbr title = "Independent and Identically Distributed">IID</abbr> given by
-		<!-- Do they have to be IID?  Check Goodman. -->
+		Gaussian random variables have the property that weighted sums of Gaussian variables still have a Gaussian <abbr title = "Probability Density Function">PDF</abbr>. For example, let \(u_i\) be one variable from a set of \(N\) independent random variables with a Gaussian <abbr title = "Probability Density Function">PDF</abbr> given by
 		$$
 		\begin{equation}
 			p\left(u_i\right) = \frac{1}{\sqrt{2 \pi \sigma_{ui}^2}} \exp\left[-\frac{\left(u_i-\mu_{ui}\right)^2}{2\sigma_{ui}^2}\right],
 		\end{equation}
 		$$
-		where \(\mu_{ui}\) is the set of \(N\) mean values and \(\sigma_{ui}\) is the set of \(N\) variances. Also, let \(a_i\) be a set of \(N\) fixed numbers. Then, the sum
+		where \(\mu_{ui}\) is the set of \(N\) mean values and \(\sigma_{ui}^2\) is the set of \(N\) variances. Also, let \(a_i\) be a set of \(N\) fixed numbers. Then, the sum
 		$$
 		\begin{equation}
 			v = \sum\limits_{i=i}^N a_i u_i,
@@ -81,7 +80,14 @@
 		$$
 		\begin{equation}
 			p\left(v\right) = \frac{1}{\sqrt{2 \pi \sigma_v^2}} \exp\left[-\frac{\left(v-\mu_v\right)^2}{2\sigma_v^2}\right]
-		\end{equation}
+		\end{equation}.
+		$$
+		In this equation, the \(v\) parameters are related to the \(u_i\) parameters acccording to
+		$$
+		\begin{align}
+		    \mu_v = \sum\limits_{i=1}^N a_i \mu_i \\
+			\sigma_v^2 = \sum\limits_{i=1}^N a_i \sigma_{ui}^2.
+		\end{align}
 		$$
 		</p>
 		<!--

@@ -102,6 +102,82 @@
 		</p>
 		
 		<h2>Complex-Valued Gaussian Random Variables</h2>
+		<h3>General Mean and Covariance</h3>
+		<p>
+		In this case, each random variable \(z_i\) is complex-values such that
+		$$
+		\begin{equation}
+			z_i = u_i + \text{i}v_i.
+		\end{equation}
+		$$
+		Readers should note the difference between the integer index \(i\) and the imaginary number \(\text{i} = \sqrt{-1}\). Joint <abbr title = "Probability Density Functions">PDFs</abbr> of complex numbers are written in terms of a vector of the real and imaginary parts stacked on top of each other like
+		$$
+		\begin{equation}
+			\mathbf{z} =
+			\begin{pmatrix}
+			u_1 \\
+			u_2 \\
+			\vdots \\
+			u_N \\
+			v_1 \\
+			v_2 \\
+			\vdots \\
+			v_N
+			\end{pmatrix}.
+		\end{equation}
+		$$
+		This is a vector of length \(2 N\). For a complex Gaussian random vector, the form of the <abbr title = "Probability Density Function">PDF</abbr> does not change. Namely, it is still written as
+		$$
+		\begin{equation}
+			p\left(\mathbf{z}\right) = \frac{1}{\left(2\pi\right)^{N/2} \left\vert \mathbf{C} \right\vert^{1/2}} \exp\left[-\frac{1}{2}\left(\mathbf{z}-\mathbf{\mu}_z\right)^t \mathbf{C}^{-1}\left(\mathbf{z}-\mathbf{\mu}_z\right)\right],
+		\end{equation}
+		$$
+		where \(\mathbf{\mu}_z = \left\langle \mathbf{z} \right\rangle\) is the mean vector, and \(\mathbf{C}\) is the \(2 N \times 2 N\) covariance matrix of \(\mathbf{z}\).
+		</p>
+		
+		<h3>Circular Complex Gaussian Random Variables</h3>
+		<p>
+		We can define a special class for Gaussian random variables called <abbr title = "Circular Complex Gaussian">CCG</abbr>. To define the conditions for <abbr title = "Circular Complex Gaussian">CCG</abbr>, we define two separate vectors from the real and imaginary parts according to
+		$$
+		\begin{align}
+			\mathbf{u} &=
+			\begin{pmatrix}
+				u_1 \\
+				u_2 \\
+				\vdots \\
+				u_N
+			\end{pmatrix}, & 
+			\mathbf{v} &=
+			\begin{pmatrix}
+				v_1 \\
+				v_2 \\
+				\vdots \\
+				v_N
+			\end{pmatrix}.
+		\end{align}
+		$$
+		Additionally, we define their covariance matrices by
+		$$
+		\begin{align}
+			\mathbf{C}^{uu} & = \left\langle \left(\mathbf{u}-\mathbf{\mu}_u\right) \left(\mathbf{u}-\mathbf{\mu}_u\right)^t \right\rangle &
+			\mathbf{C}^{vv} & = \left\langle \left(\mathbf{v}-\mathbf{\mu}_v\right) \left(\mathbf{v}-\mathbf{\mu}_v\right)^t \right\rangle \\
+			\mathbf{C}^{uv} & = \left\langle \left(\mathbf{u}-\mathbf{\mu}_u\right) \left(\mathbf{v}-\mathbf{\mu}_v\right)^t \right\rangle &
+			\mathbf{C}^{vu} & = \left\langle \left(\mathbf{v}-\mathbf{\mu}_v\right) \left(\mathbf{u}-\mathbf{\mu}_u\right)^t \right\rangle.
+		\end{align}
+		$$
+		The special case of <abbr title = "Circular Complex Gaussian">CCG</abbr> is defined by zero-valued mean vectors
+		$$
+		\begin{equation}
+			\mathbf{\mu}_u = \mathbf{\mu}_v = \mathbf{0}
+		\end{equation}
+		$$
+		and symmetry in the covariance matrices such that
+		$$
+		\begin{align}
+			\mathbf{C}^{uu} &= \mathbf{C}^{uu}, & \mathbf{C}^{uv} &= -\mathbf{C}^{vu}.
+		\end{align}
+		$$
+		</p>
 		
 		<h2>Sums of Gaussian Random Variables</h2>
 		<p>
@@ -120,7 +196,7 @@
 		In this equation, the \(w\) parameters are related to the \(u_i\) parameters acccording to
 		$$
 		\begin{align}
-		    \mu_w = \sum\limits_{i=1}^N a_i \mu_i \\
+		    \mu_w = \sum\limits_{i=1}^N a_i \mu_{ui} \\
 			\sigma_w^2 = \sum\limits_{i=1}^N a_i \sigma_{ui}^2.
 		\end{align}
 		$$

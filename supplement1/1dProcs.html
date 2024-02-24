@@ -215,10 +215,21 @@
 		$$
 		Equation \(\eqref{eq:GaussSumPDF}\) is an important property of working with Gaussian random numbers. Random variables with other <abbr title = "Probability Density Functions">PDFs</abbr> have different relationships. For more information on these relationships, see the Wikipedia citations below.
 		</p>
-		<!--
+		
 		<p>
-		This property extends to a set of \(N\) random values \(v_i\).  with covariance matrix of \(u_i\), \(\sum_u\)
-		</p>
+		The sum of random variable above can be extended to a vector of Gaussian random variables in the following way. Let \(\mathbf{u}\) be column vector of \(N\) <dfn>independent random variables</dfn> \(u_j\) with the same Gaussian <abbr title = "Probability Density Function">PDF</abbr> that has a mean of 0 and variance of 1.	Also, let \(\mathbf{A}\) be a matrix with \(M\) rows and \(N\) columns of fixed values \(a_{ij}\). Then, the random column vector
+		$$
+		\begin{equation}
+			\mathbf{w} = \mathbf{A} \mathbf{u}
+		\end{equation}
+		$$
+		has \(M\) values. The entries in \(\mathbf{w}\) are Gaussian random variables that have a mean of zero and a covariance given by \(\mathbf{C} = \mathbf{A} \mathbf{A}^t\).
+		</p>		
+		<!--
+		Look up section on colored random noise in green book from Goda
+		Look up section on Zernike phase screens in Roggemann & Welsh
+		Look up my paper on phase screens with SLMs and citations
+		Find code example on laptop
 		
 		<p>
 		Joint PDF for two correlated random variables. Example of generating two correlated random variables.

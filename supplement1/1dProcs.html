@@ -87,6 +87,16 @@
 		$$
 		</p>
 		
+		<p>
+		You can generate independent Gaussian random numbers with a variance of 1 and mean of 0 in Matlab using the <span class="code">randn</span> function. Here is how to adjust the mean and variance: Let \(u\) be a Gaussian random number with a variance of 1 and mean of 0. Then, the number
+		$$
+		\begin{equation}
+		    v = \sigma_v u + \mu_v
+		\end{equation}
+		$$
+		has a Gaussian <abbr title = "Probability Density Function">PDF</abbr> with a mean of \(\mu_v\) and variance of \(\sigma_v^2\).
+		</p>
+		
 		<h3>Correlated Gaussian Random Variables</h3>
 		<p>
 		Let \(v_i\) be a set of \(N\) <dfn>correlated random variables</dfn>, and denote all of the \(v_i\) as a column vector \(\mathbf{v}\). It has a vector of mean values \(\mathbf{\mu}_{v}\). The elements of the covariance matrix are given by
@@ -192,6 +202,7 @@
 		also has a Gaussian <abbr title = "Probability Density Function">PDF</abbr> given by
 		$$
 		\begin{equation}
+			\label{eq:GaussSumPDF}
 			p\left(w\right) = \frac{1}{\sqrt{2 \pi \sigma_w^2}} \exp\left[-\frac{\left(w-\mu_w\right)^2}{2\sigma_w^2}\right].
 		\end{equation}
 		$$
@@ -202,6 +213,7 @@
 			\sigma_w^2 = \sum\limits_{i=1}^N a_i \sigma_{ui}^2.
 		\end{align}
 		$$
+		Equation \(\eqref{eq:GaussSumPDF}\) is an important property of working with Gaussian random numbers. Random variables with other <abbr title = "Probability Density Functions">PDFs</abbr> have different relationships. For more information on these relationships, see the Wikipedia citations below.
 		</p>
 		<!--
 		<p>
@@ -223,6 +235,9 @@
 		<h2>References</h2>
 		<ol>
 			<li>Joseph W. Goodman, <u>Statistical Optics</u> Ch. 3, Wiley, New York, NY (1985)</li>
+			<li><a href="https://en.wikipedia.org/wiki/Relationships_among_probability_distributions">Relationships among probability distributions</a>, In <i>Wikipedia.</i></li>
+			<li><a href="https://en.wikipedia.org/wiki/Algebra_of_random_variables">Algebra of random variables</a>, In <i>Wikipedia.</i></li>
+			<li><a href="https://en.wikipedia.org/wiki/List_of_convolutions_of_probability_distributions">List of convolutions of probability distributions</a>, In <i>Wikipedia.</i></li>
 		</ol>
 	</div>
 

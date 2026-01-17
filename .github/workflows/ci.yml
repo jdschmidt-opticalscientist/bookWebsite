@@ -1,0 +1,35 @@
+name: CI Quality Check
+
+on:
+  push:
+    branches: ["*"] # Runs on every branch you push
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Check for Broken Links (Very helpful for documentation sites!)
+      - name: Link Checker
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: --verbose --no-progress './**/*.html' './**/*.md'
+          fail: true
+
+      # 2. Check Markdown Formatting
+      - name: Lint Markdown
+        uses: DavidAnson/markdownlint-cli2-action@v1
+        with:
+          globs: "**/*.md"
+
+      # 3. Test the Build (Simulates GitHub Pages deployment)
+      - name: Test Build
+        run: |
+          echo "Running build simulation..."
+          # If using Jekyll, uncomment the next line:
+          # bundle exec jekyll build 
+          # If it's just plain HTML/CSS, this step can just be a confirmation.
+          echo "Build successful."

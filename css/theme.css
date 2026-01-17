@@ -1,0 +1,183 @@
+/* ===========================================================
+   theme.css — shared color palette and typography
+   Matches "Numerical Simulation of Optical Wave Propagation"
+   =========================================================== */
+
+:root {
+  --primary-color: #0A0C3A;      /* Deep night blue */
+  --secondary-color: #1C1F54;    /* Lower sky tone */
+  --accent-color: #FFB300;       /* Gold title */
+  --accent-light: #FFD25F;       /* Subtitle and name */
+  --text-color: #FFFFFF;         /* White text */
+  --bg-color: #0A0C3A;           /* Page background */
+  --font-main: 'Montserrat', 'Futura', Arial, sans-serif;
+
+  /* NEW — layout-related variables */
+  --content-max-width: 900px;
+  --sidebar-width: 14em;
+}
+
+/* ===== Base Styles ===== */
+body {
+  font-family: var(--font-main);
+  background: linear-gradient(to bottom, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--accent-light);
+}
+
+/* ===== Shared Header ===== */
+.page-header {
+  background: radial-gradient(circle at top center, #1C1F54 0%, #0A0C3A 80%);
+  text-align: center;
+  padding: 2em 0 1em 0;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.5em;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 1.5em;
+}
+
+.header-text h1 {
+  color: var(--accent-color);
+  font-size: 1.8em;
+  letter-spacing: 0.03em;
+  margin: 0.2em 0;
+}
+
+.header-text h2, .header-text h3 {
+  color: var(--accent-light);
+  font-weight: normal;
+  margin: 0.3em 0;
+}
+
+/* Tagline should visually match the title size */
+.header-text h3#chapter-tagline {
+  font-size: 1.6em;       /* slightly smaller than h1 */
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  margin-top: 0.4em;
+  color: var(--accent-color);
+}
+
+
+img.bookImg {
+  width: 120px;
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  box-shadow: 0 0 12px rgba(255, 179, 0, 0.4);
+}
+
+/* ===== Footer ===== */
+footer {
+  text-align: center;
+  padding: 2em 0;
+  background-color: var(--primary-color);
+}
+
+footer hr {
+  width: 80%;
+  border: 0;
+  border-top: 1px solid var(--accent-light);
+  margin-bottom: 1em;
+}
+
+footer nav a {
+  color: var(--accent-color);
+  margin: 0 0.75em;
+}
+footer nav a:hover {
+  color: var(--accent-light);
+}
+
+/* ===== Navigation box ===== */
+#right_nav_box {
+  position: sticky;                /* NEW: was fixed — now scrolls gracefully */
+  top: 2em;                        /* NEW: aligns with article header */
+  float: right;                    /* NEW: ensures layout doesn't overlap */
+  width: var(--sidebar-width);
+  background-color: var(--primary-color);
+  padding: 1em;
+  margin: 1em;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  z-index: 2;                      /* NEW: sits above main content */
+}
+
+/* ===== Sidebar Navigation Links ===== */
+#right_nav_box a {
+  color: var(--accent-light);
+  text-decoration: none;
+  display: block;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Hover: slightly brighter gold text and faint background */
+#right_nav_box a:hover {
+  color: var(--accent-color);
+  background-color: rgba(255, 210, 95, 0.1);
+}
+
+/* Active (current page): subtle gold glow */
+#right_nav_box a.active {
+  background-color: rgba(255, 210, 95, 0.15);
+  color: var(--accent-light);
+  font-weight: 600;
+}
+
+/* When hovering the active item: brighten the text, keep the glow */
+#right_nav_box a.active:hover {
+  background-color: rgba(255, 210, 95, 0.2);
+  color: var(--accent-color);
+}
+
+/* ===== NEW: Content Container Rules ===== */
+main.text {
+  margin-right: calc(var(--sidebar-width) + 3em); /* ensures content stays clear of sidebar */
+  max-width: var(--content-max-width);
+  overflow: visible;
+}
+
+/* ============================================================
+   Prism Toolbar (copy button)
+   ============================================================ */
+div.code-toolbar {
+  position: relative;
+  margin-bottom: 1.5em;
+}
+
+div.code-toolbar > .toolbar {
+  opacity: 1;
+  top: 0.3em;
+  right: 0.3em;
+}
+
+div.code-toolbar > .toolbar button {
+  background: #eaeaea;
+  color: #333;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  font-size: 0.8em;
+  padding: 0.2em 0.6em;
+  transition: background 0.2s ease;
+}
+
+div.code-toolbar > .toolbar button:hover {
+  background: #dcdcdc;
+}

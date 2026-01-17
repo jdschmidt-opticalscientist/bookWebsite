@@ -1,0 +1,38 @@
+/* ===========================================================
+   mainPage.css – Book-style theme (Numerical Simulation of Optical Wave Propagation)
+   =========================================================== */
+
+/* mainPage.css — page-specific layout styling */
+
+/* ===== Main Content Box ===== */
+main.text {
+  background-color: #FFFFFF;
+  color: #000;
+  border-radius: 8px;
+  padding: 1.5em;
+  margin: 2em auto;
+  max-width: 900px;
+  line-height: 1.6;
+}
+
+/* ===== Table of Contents ===== */
+.toc {
+  padding: 1em;
+}
+.toc ul {
+  list-style-type: none;
+  padding: 0;
+}
+.toc li {
+  margin: 0.5em 0;
+}
+
+/* ===== Responsive Layout ===== */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+  }
+  main.text {
+    margin: 1em;
+  }
+}

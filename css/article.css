@@ -1,0 +1,164 @@
+/* ==========================================================
+   article.css
+   Supplemental article styles
+   ========================================================== */
+
+/* ===== Body and Content Layout ===== */
+body {
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* Main article box */
+main.text {
+  background-color: #fff;
+  color: #000;
+  border-radius: 8px;
+  padding: 2em;
+  margin: 2em auto;
+  max-width: var(--content-max-width);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-right: calc(var(--sidebar-width) + 3em);
+}
+
+/* Headings */
+main.text h1 {
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 0.25em;
+  margin-top: 0;
+}
+
+main.text h2 {
+  color: var(--primary-color);
+  margin-top: 1.5em;
+}
+
+main.text h3 {
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-top: 1.2em;
+}
+
+/* ===== Paragraph and List Formatting ===== */
+main.text p {
+  margin: 1em 0;
+}
+
+main.text ul {
+  margin-left: 1.5em;
+  margin-top: 0.5em;
+}
+
+main.text li {
+  margin-bottom: 0.4em;
+}
+
+/* Ensure article images fit within the text column */
+main.text img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5em auto; /* optional: centers images and adds vertical spacing */
+}
+
+/* ===== Code within the Text Formatting ===== */
+span.code
+{
+	font-family: Courier;
+	color: black;
+}
+
+span.string
+{
+	font-family: Courier;
+	color: #800080;
+}
+
+/* ===== MathJax / Equation Presentation ===== */
+mjx-container {
+  font-size: 1.05em;
+  line-height: 1.4;
+}
+
+mjx-container[display="true"] {
+  margin: 1em auto;
+  text-align: center;
+}
+
+/* ===== In-Page Links ===== */
+main.text a {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+main.text a:hover {
+  color: var(--accent-color);
+}
+
+/* ===== Footer adjustments for article pages ===== */
+footer {
+  margin-top: 3em;
+}
+
+/* ===== Responsive Tweaks ===== */
+@media (max-width: 768px) {
+  main.text {
+    margin: 1em;
+    padding: 1.2em;
+  }
+}
+
+/* ==========================================================
+   Code, Figures, and MathJax extensions
+   ========================================================== */
+
+/* ===== Code Blocks ===== */
+/*
+pre.codeinput {
+  background-color: #f8f9fb;
+  color: #111;
+  border: 1px solid #d0d0d0;
+  border-left: 4px solid var(--accent-color);
+  border-radius: 6px;
+  padding: 1em;
+  font-family: "Courier New", Consolas, monospace;
+  font-size: 0.95em;
+  overflow-x: auto;
+  line-height: 1.45;
+  margin: 1.5em 0;
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+}
+  */
+
+/* ============================================================
+   MATLAB Editor–Style Syntax Colors for PrismJS
+   ============================================================ */
+
+/* Comments – green */
+pre.codeinput code.language-matlab .token.comment {
+  color: #008000 !important;
+  font-style: normal !important;
+}
+
+/* Strings – purple */
+pre.codeinput code.language-matlab .token.string {
+  color: #800080 !important;
+}
+
+/* Keywords – blue */
+pre.codeinput code.language-matlab .token.keyword {
+  color: #0000FF !important;
+  font-weight: 600 !important;
+}
+
+/* Functions, numbers, operators – black */
+pre.codeinput code.language-matlab .token.function,
+pre.codeinput code.language-matlab .token.builtin,
+pre.codeinput code.language-matlab .token.number,
+pre.codeinput code.language-matlab .token.operator,
+pre.codeinput code.language-matlab .token.punctuation {
+  color: #000000 !important;
+}

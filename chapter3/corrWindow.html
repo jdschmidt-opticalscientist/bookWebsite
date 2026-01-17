@@ -1,65 +1,57 @@
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Correlation Integral with Window Functions</title>
 
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
-	<link rel="stylesheet" type="text/css" href="../matlab.css" /> 	  
-	<link rel="stylesheet" type="text/css" href="../mainPage.css" />
+  <!-- MathJax -->
+  <script>
+    window.MathJax = { tex: { tags: "ams" } };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-	<title>Chapter 3: Simple Computations Using Fourier Transforms</title>
+  <!-- PrismJS -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.css" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.css" />
 
-	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-	
-	<script>
-		window.MathJax = {
-		  tex: {
-			tags: 'ams'
-		  }
-		};
-	</script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-matlab.min.js"></script>
+
+  <!-- Your site-wide styling -->
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/mainPage.css" />
+  <link rel="stylesheet" href="../css/article.css" />
+
+  <!-- Your site-wide JS utilities -->
+  <script src="../js/layout.js" defer></script>
+  <script src="../js/navigation.js" defer></script>
+  <script src="../js/loadMatlabFile.js" defer></script>
 
 </head>
 
 <body>
-	<div class="header">
-	<table>
-		<tr>
-		<td align="left" align="140">
-			<img class="bookImg" src="../PM199-245.jpg" />
-		</td>
-		<td align=center>
-		<h1>Chapter 3: Simple Computations Using Fourier Transforms</h1>
-		</td>
-		</table>
-	</div>
 
-	<div class="text">
-		<!-- Vertical navigation bar on right side -->
-		<div id="right_nav_box">
-			<ul>
-				<li><a href="../index.html">Home</a>
-				<li><a href="../chapter1/index.html">Chapter 1</a>
-				<li><a href="../chapter2/index.html">Chapter 2</a>
-				<li><a href="../chapter3/index.html">Chapter 3</a>
-				<li><a href="../chapter4/index.html">Chapter 4</a>
-				<li><a href="../chapter5/index.html">Chapter 5</a>
-				<li><a href="../chapter6/index.html">Chapter 6</a>
-				<li><a href="../chapter7/index.html">Chapter 7</a>
-				<li><a href="../chapter8/index.html">Chapter 8</a>
-				<li><a href="../chapter9/index.html">Chapter 9</a>
-				<li><a href="../supplement1/index.html">Supplement 1</a></li>
-			</ul>
-		</div>
+  <!-- ===== HEADER ===== -->
+  <header class="page-header"
+        data-title="Chapter 3: Simple Computations Using Fourier Transforms">
+  </header>
 
-		
-		<h1>Correlation Integral with Window Functions</h1>
+  <!-- ===== Sidebar Navigation (populated by navigation.js) ===== -->
+  <nav id="right_nav_box" aria-label="Chapter navigation"></nav>
 
-		<p>
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="text">
+    <h1>Correlation Integral with Window Functions</h1>
+
+<p>
 		This article explains one step in the process of computing an unbiased correlation/covariance of a 2-D random process. The discussion here builds a concept that is used for explaining the <span class="code">corr2_ft_new</span> that replaces the <span class="code">corr2_ft</span> function in the book. I cover temporal and spatial covariance in <a href="statDefs.html">Some Statistical Definitions</a>, which are important concepts in optical turbulence. In experiments with ergodic random processes, we typically compute the covariance of that process by spatially integrating over a finite-sized window. This window might be a circular-shaped field of view in an image or a circular/annular telescope pupil on a wavefront sensor. Usually, these data are collected on a rectangular camera and analyzed in a computer as 2-D arrays of numbers. The window shape affects the region of integration, and we must properly account for it.
 		</p>
 		
@@ -214,29 +206,17 @@
 		<p>
 		Here is an example of the correlation sum with a rectangular window. The window is the variable <span class="code">w</span>, and it has 10 samples. Only the four central values are nonzero. The output is shown below the code.
 			
-  <div class="content"><pre class="codeinput">
-1  <span class="comment">% corrRectWindow1D.m</span>
-2  clear <span class="string">variables</span>; clc;
-3  N = 10; <span class="comment">% number of samples</span>
-4  w = [0 0 0 1 1 1 1 0 0 0]; <span class="comment">% window function</span>
-5  wCorrNneg = zeros(1,N); <span class="comment">% allocate space for correlation, just nonnegative lags</span>
-6  <span class="comment">% explicit sum for correlation:</span>
-7  <span class="keyword">for</span> m = 0 : N-1
-8      wCorrNneg(m+1) = sum(w(m+1:N) .* w(1:N-m));
-9  <span class="keyword">end</span>
-10 <span class="comment">% use symmetry to fill in negative lags:</span>
-11 wCorrLoop = cat(2, wCorrNneg(N:-1:2), wCorrNneg);
-12 <span class="comment">% use xcorr to compute the same thing:</span>
-13 wXCorr = xcorr(w, <span class="string">'none'</span>);
-14 <span class="comment">% display correlation from loop:</span>
-15 fprintf(<span class="string">'wCorrLoop = \n'</span>)
-16 fprintf(<span class="string">'%1.0f '</span>, wCorrLoop)
-17 fprintf(<span class="string">'\n'</span>)
-18 <span class="comment">% display correlation from xcorr:</span>
-19 fprintf(<span class="string">'wXCorr = \n'</span>)
-20 fprintf(<span class="string">'%1.0f '</span>, wXCorr)
-21 fprintf(<span class="string">'\n'</span>)
-</pre>
+      <div id="codeContainer1"></div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        loadMatlabFile(
+          "https://raw.githubusercontent.com/jdschmidt-opticalscientist/bookWebsiteMatlabCode/refs/heads/main/examples/Chapter3/basicCorrelation/corrRectWindow1D.m",
+          "#codeContainer1"
+        );
+      });
+    </script>
+
 <pre class="codeoutput">wCorrLoop = 
 0 0 0 0 0 0 1 2 3 4 3 2 1 0 0 0 0 0 0 
 wXCorr = 
@@ -250,6 +230,7 @@ wXCorr =
 		<p>
 		I illustrate this one more time with a window that is not contiguous. This time, line 4 is changed so that the window is given by
 		</p>
+
   <div class="content"><pre class="codeinput">
 4  w = [0 1 0 1 0 1 1 1 1 0]; <span class="comment">% window function</span>
 </pre>
@@ -292,90 +273,20 @@ wXCorr =
 		Here is an example of its usage that is similar to the 1-D examples of <span class="code">xcorr</span> above. The code below is followed by the resulting command-line output and figures. This example shows both the usage of <span class="code">xcorr2</span> function and a <abbr title = "Fourier transform">FT</abbr>-based calculation. There are a few key differences to note: The output of <span class="code">xcorr2</span> has \(2N-1\) rows and \(2M-1\) columns, as expected. For the <abbr title = "Fourier transform">FT</abbr>-based calculation, the user needs to pad the input arrays to have \(2N\) rows and \(2M\) columns. The prevents a circular correlation from being calculated. As a result, the output of the <abbr title = "Fourier transform">FT</abbr>-based calculation has \(2N\) rows and \(2M\) columns, rather than \(2N-1\) rows and \(2M-1\) columns.
 		</p>
 
-<div class="content"><pre class="codeinput">
-1  <span class="comment">% checkXcorr2.m</span>
-2  
-3  <span class="comment">% define window and spatial grid:</span>
-4  N = 512; <span class="comment">% number of grid points per side</span>
-5  w = ones(N); <span class="comment">% window that covers the entire grid</span>
-6  w(201:400,301:500) = 0;
-7  dx = 1; <span class="comment">% grid spacing [m]</span>
-8  x = (-N/2 : N/2-1) * dx; <span class="comment">% spatial grid</span>
-9
-10  <span class="comment">% count the number of nonzero entries, output to command line:</span>
-11 sprintf(<span class="string">'There are %i nonzero entries in w'</span>, sum(w(:)))
-12
-13 <span class="comment">% show original window:</span>
-14 figure(1); clf;
-15 imagesc(x, x, w);
-16 axis(<span class="string">'image'</span>, <span class="string">'xy'</span>);
-17 colorbar;
-18 xlabel(<span class="string">'x [m]'</span>);
-119 ylabel(<span class="string">'y [m]'</span>);
-20
-21 <span class="comment">% compute autocorrelation from original window using Matlab's xcorr2:</span>
-22 c1 = xcorr2(w, w);
-23 <span class="comment">% size of c1 is 2N-1 by 2N-1</span>
-24 xCor2 = (-N+1 : N-1)*dx; <span class="comment">% spatial grid for xcorr2 result</span>
-25 <span class="comment">% find the max value and its row &amp; column:</span>
-26 [M, I] = max(c1(:));
-27 [row, col] = ind2sub([2*N-1, 2*N-1], I);
-28
-29 <span class="comment">% show window correlation from xcorr2:</span>
-30 figure(2); clf;
-31 imagesc(xCor2, xCor2, c1);
-32 axis(<span class="string">'image'</span>, <span class="string">'xy'</span>);
-33 colorbar;
-34 xlabel(<span class="string">'x [m]'</span>);
-35 ylabel(<span class="string">'y [m]'</span>);
-36 title(sprintf(<span class="string">'Max value is %i, in row %i and col %i'</span>, M, row, col));
-37
-38 <span class="comment">%% FT-based calculation of the correlation</span>
-39 
-40 <span class="comment">% define zero-padded window and grid so that non-circular correlation is</span>
-41 <span class="comment">% computed:</span>
-42 NPad = 2*N; <span class="comment">% number of grid points in zero-padded array</span>
-43 wPad = zeros(NPad, NPad); <span class="comment">% making zero-padded array</span>
-44 idxOrig = (-N/2 : N/2-1) + N+1; <span class="comment">% indices for original window</span>
-45 wPad(idxOrig, idxOrig) = w; <span class="comment">% fill center of zero-padded array</span>
-46 xPad = (-NPad/2 : NPad/2-1)*dx; <span class="comment">% coordinates for zero-padded array</span>
-47
-48 <span class="comment">% show padded window:</span>
-49 figure(3); clf;
-50 imagesc(xPad, xPad, wPad);
-51 axis(<span class="string">'image'</span>, <span class="string">'xy'</span>);
-52 colorbar;
-53 xlabel(<span class="string">'x [m]'</span>);
-54 ylabel(<span class="string">'y [m]'</span>);
-55
-56 <span class="comment">% compute autocorrelation from padded window using Fourier transforms:</span>
-57 df = 1/NPad; <span class="comment">% spatial frequency grid spacing</span>
-58 c2 = ift2(abs(ft2(wPad, dx)).^2, df);
-59 <span class="comment">% wFT = ft2(wPad, dx);</span>
-60 <span class="comment">% wFtFlip = ft2(flip(flip(wFT,1),2), dx);</span>
-61 <span class="comment">% c2 = ift2(wFT.*wFtFlip, df);</span>
-62 <span class="comment">% find the max value and its row &amp; column:</span>
-63 [M, I] = max(c2(:));
-64 [row, col] = ind2sub([2*N, 2*N], I);
-65
-66 <span class="comment">% show window correlation from Fourier transform:</span>
-67 figure(4); clf;
-68 imagesc(xPad, xPad, abs(c2));
-69 axis(<span class="string">'image'</span>, <span class="string">'xy'</span>);
-70 colorbar;
-71 xlabel(<span class="string">'x [m]'</span>);
-72 ylabel(<span class="string">'y [m]'</span>);
-73 title(sprintf(<span class="string">'Max value is %i, in row %i and col %i'</span>, M, row, col));
-</pre>
+    <div id="codeContainer2"></div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        loadMatlabFile(
+          "https://raw.githubusercontent.com/jdschmidt-opticalscientist/bookWebsiteMatlabCode/refs/heads/main/examples/Chapter3/basicCorrelation/checkXcorr2.m",
+          "#codeContainer2"
+        );
+      });
+    </script>
 
 <pre class="codeoutput">ans =
     'There are 222144 nonzero entries in w'
 </pre>
-
-<img vspace="5" hspace="5" src="checkXcorr2_01.png" alt=""> <img vspace="5" hspace="5" src="checkXcorr2_02.png" alt=""> 
-
-<img vspace="5" hspace="5" src="checkXcorr2_03.png" alt=""> <img vspace="5" hspace="5" src="checkXcorr2_04.png" alt="">
-</div>
 
 	<p>
 	In the code above, <span class="code">w</span> is the input to <span class="code">xcorr2</span>, and it has size \(N = M = 512\). The output is <span class="code">c1</span>, and it has size \(2N-1 = 2M-1 = 1023\). The peak value of <span class="code">c1</span> is equal to the number of nonzero entries, and it is located in row \(N\), column \(M\).
@@ -386,12 +297,10 @@ wXCorr =
 	</p>
 
 	</div>
+  </main>
 
-	<div class="footer">
-		<br/>
-		<hr/>
-		<a href="../index.html">Home</a> | <a href="../aboutBook.html">About</a>
-	</div>
+  <!-- ===== FOOTER ===== -->
+  <footer id="site_footer"></footer>
 
 </body>
 </html>

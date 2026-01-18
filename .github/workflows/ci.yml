@@ -16,7 +16,13 @@ jobs:
       - name: Link Checker
         uses: lycheeverse/lychee-action@v1
         with:
-          args: --verbose --no-progress './**/*.html' './**/*.md'
+          # --exclude ignores the MathWorks site that blocks bots
+          # --remap lets the checker know where the root is for absolute paths
+          args: >
+            --verbose 
+            --no-progress 
+            --exclude "https://www.mathworks.com/.*"
+            './**/*.html'
           fail: true
 
       # 2. Check Markdown Formatting

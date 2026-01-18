@@ -30,7 +30,8 @@ jobs:
         with:
           globs: |
             **/*.md
-            !lychee/**/*.md
+            !**/out.md
+          config: .markdownlint.json
 
       # 3. Test the Build (Simulates GitHub Pages deployment)
       - name: Test Build

@@ -31,7 +31,6 @@ jobs:
           globs: |
             **/*.md
             !**/out.md
-          config_file: .markdownlint.json
 
       # 3. Test the Build (Simulates GitHub Pages deployment)
       - name: Test Build

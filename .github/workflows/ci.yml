@@ -28,7 +28,9 @@ jobs:
       - name: Lint Markdown
         uses: DavidAnson/markdownlint-cli2-action@v1
         with:
-          globs: "**/*.md"
+          globs: |
+            **/*.md
+            !lychee/**/*.md
 
       # 3. Test the Build (Simulates GitHub Pages deployment)
       - name: Test Build

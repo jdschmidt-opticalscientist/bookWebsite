@@ -71,7 +71,7 @@
 			\Gamma_u\left(\tau\right) = \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} u\left(t\right) u\left(t-\tau\right) \, \textrm{d}t.
 		\end{equation}
 		$$
-		In reality, we always observe the process \(u\left(t\right)\) over a finite period of time, described by a window function \(W\left(t\right)\). Accordingly, we can define a time-windowed function realization of the random process as \(u^{\prime}\left(t\right) = u\left(t\right) w\left(t\right)\). Thus, we always have the integral of the time-windowed realization
+		In reality, we always observe the process \(u\left(t\right)\) over a finite period of time, described by a window function \(W\left(t\right)\). Accordingly, we can define a time-windowed function realization of the random process as \(u^{\prime}\left(t\right) = u\left(t\right) W\left(t\right)\). Thus, we always have the integral of the time-windowed realization
 		$$
 		\begin{equation}
 			I^{\prime}\left(\tau\right) = \int\limits_{-T/2}^{T/2} u^{\prime}\left(t\right) u^{\prime}\left(t-\tau\right) \, \textrm{d}t.
@@ -101,7 +101,7 @@
 		</p>
 		
 		<p>
-		It is important to note some subtleties in doing the <abbr title = "Fourier transforms">FT</abbr> correlation properly. First, the random process <span class="code">g</span> is zero-padded before doing the <abbr title = "Fourier transform">FT</abbr> operation. Second, in the line that makes the final plot, <span class="code">corrGBig</span> is divided by the grid spacing <span class="code">M/Lt</span> and divided by the number of samples <span class="code">M-abs(mLagsFT)</span>. The close match between the theoretical correlation, the unbiased <span class="code">xcorr</span> calculation, and the <abbr title = "Fourier transform">FT</abbr>-based calculation is shown in the last plot.
+		It is important to note some subtleties in doing the <abbr title = "Fourier transforms">FT</abbr> correlation properly. First, the random process <span class="code">g</span> is zero-padded before doing the <abbr title = "Fourier transform">FT</abbr> operation. Second, in the line that makes the final plot, <span class="code">corrGBig</span> is divided by the grid spacing <span class="code">M/T</span> and divided by the number of samples <span class="code">M-abs(mLagsFT)</span>. The close match between the theoretical correlation, the unbiased <span class="code">xcorr</span> calculation, and the <abbr title = "Fourier transform">FT</abbr>-based calculation is shown in the last plot.
 		</p>
 
     <div id="codeContainer"></div>

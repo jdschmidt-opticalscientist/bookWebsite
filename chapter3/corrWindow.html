@@ -296,6 +296,19 @@ wXCorr =
 	In the code above, <span class="code">wPad</span> is the input to the FT-based calculation, and its size is padded size is \(2N = 2M = 1024\). The outputs of the functions <span class="code">ft2</span> and <span class="code">ift2</span> have the same size as the input, so the variable <span class="code">c2</span> has size \(2N = 2M = 1024\). The origin of the spatial grid for <span class="code">c2</span> is located in row \(N+1 = 513\), column \(M+1 = 513\). Thus, its peak value located at row 513 and column 513.
 	</p>
 
+ <p>
+    To better visualize the "area of overlap" map for a more complex window, Figure 1 shows the original mask containing a rectangular "hole" and its corresponding autocorrelation computed via the FT method.
+    </p>
+
+    
+    <img src="checkXcorr2_mask.png" alt="2-D window and its autocorrelation result" class="article-image" />
+    <div class="figure-caption">
+      Figure 1 — (Left) A 512x512 mask with a rectangular hole. (Right) The autocorrelation of the mask, \(\mathcal{A}(\Delta x, \Delta y)\).
+    </div>
+
+    <p>
+    The right-hand plot in Figure 1 represents the denominator required to unbias statistical estimates. Because the window has a hole, certain spatial lags have fewer overlapping pixels than others. Notice the distinct dip in the center of the correlation function caused by the hole. By dividing by this map, we ensure that our final correlation estimate is correctly normalized by the number of active pixel-pairs contributing to each lag.
+    </p>
 	</div>
   </main>
 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unbiased Correlation of 2-D Random Processes | Chapter 3 Supplemental</title>
+
+  <script>
+    window.MathJax = { tex: { tags: "ams" } };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.css" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-matlab.min.js"></script>
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/mainPage.css" />
+  <link rel="stylesheet" href="../css/article.css" />
+
+  <script src="../js/layout.js" ></script>
+  <script src="../js/navigation.js" ></script>
+  <script src="../js/loadMatlabFile.js" ></script>
+
+</head>
+
+<body>
+
+  <header class="page-header" data-title="Chapter 3: Simple Computations Using Fourier Transforms"></header>
+  <nav id="right_nav_box" aria-label="Chapter navigation"></nav>
+
+  <main class="text">
+    <h1>Unbiased Correlation of 2-D Random Processes</h1>
+
+    <p>
+      While 1-D correlation is a staple of signal processing, optical systems naturally operate in two dimensions. Transitioning from 1-D temporal signals to 2-D spatial signals requires a more rigorous handling of the observation window. Building on the concepts from <a href="corrWindow.html">Correlation Integral with Window Functions</a>—specifically the final section regarding 2-D window functions—we can extend the unbiasing procedure to account for the complex geometries, such as circular apertures, commonly found in optical hardware.
+    </p>
+
+    <p>
+      In 2-D, the "slide and multiply" overlap area (the area of overlap between a mask and its shifted version) decreases as the spatial lag \((\tau_x, \tau_y)\) increases. Without correction, this geometric roll-off biases the correlation estimate toward zero. To recover the true stationary covariance of the underlying process, we must divide the raw correlation by the autocorrelation of the mask itself.
+    </p>
+
+    <h2>Numerical Verification</h2>
+    <p>
+      The following script, <span class="code">checkXcorr2.m</span>, verifies this unbiasing procedure for a circular aperture. It generates an ensemble of random realizations using the subharmonic method to ensure accurate low-frequency statistics. For each realization, a mask is applied and the data is zero-padded into a \(2N \times 2N\) grid. Centering the data within this larger grid ensures that the correlation peak (zero lag) is located at the center of the output array, specifically at index \((N+1, N+1)\).
+    </p>
+
+    
+
+    <p>
+      The correlation is computed using the function <span class="code">corr2_ft.m</span>, which is a new, updated version of the one provided in the book. This function implements the correlation theorem via Fourier transforms and corrects the statistical bias by dividing the result by the autocorrelation of the aperture mask. This divisor represents the absolute area of overlap at each spatial lag.
+    </p>
+
+    <div id="codeContainer"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadMatlabFile(
+            "https://raw.githubusercontent.com/jdschmidt-opticalscientist/bookWebsiteMatlabCode/main/examples/Chapter3/basicCorrelation/checkXcorr2.m",
+            "#codeContainer"
+            );
+        });
+        </script>
+
+    <h2>Ensemble Results and Radial Averaging</h2>
+    <p>
+      For isotropic processes (those with no preferred orientation), we can improve our statistical confidence by averaging the 2-D correlation result over the azimuthal angle. The function <span class="code">azimuthal_average.m</span> utilizes all pixel pairs at a given radial lag \(r\) to produce a smooth 1-D profile from the 2-D data. 
+    </p>
+    
+    <p>
+      By comparing the biased and unbiased radial averages in Figure 1, the effect of the mask becomes clear. The biased estimate significantly underestimates the variance at all lags because the windowing effect is not accounted for. In contrast, the unbiased estimate recovers the theoretical Gaussian covariance and accurately tracks the intended variance at the origin.
+    </p>
+
+    <img src="checkXcorr2D_Results.png" alt="2-D realization and radial average verification" class="article-image" />
+    <div class="figure-caption">
+      Figure 1 — (a) A single 2-D realization within a circular mask. (b) The radial average of the biased correlation showing the characteristic roll-off. (c) The radial average of the unbiased correlation, showing a precise fit to the theoretical model.
+    </div>
+
+    <p>
+      This unbiasing approach is essential for verifying that simulated atmospheric phase screens or other random optical fields correctly represent the intended spatial statistics, especially when the fields are observed through finite-sized telescope apertures.
+    </p>
+
+  </main>
+
+  <footer id="site_footer"></footer>
+
+</body>
+</html>

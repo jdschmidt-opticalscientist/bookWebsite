@@ -5,13 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Unbiased Correlation of 1-D Random Processes | Chapter 3 Supplemental</title>
 
-  <!-- MathJax -->
   <script>
     window.MathJax = { tex: { tags: "ams" } };
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-  <!-- PrismJS -->
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" />
   <link rel="stylesheet"
@@ -25,84 +23,81 @@
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-matlab.min.js"></script>
 
-  <!-- Your site-wide styling -->
   <link rel="stylesheet" href="../css/theme.css" />
   <link rel="stylesheet" href="../css/mainPage.css" />
   <link rel="stylesheet" href="../css/article.css" />
 
-  <!-- Your site-wide JS utilities -->
-  <script src="../js/layout.js" defer></script>
-  <script src="../js/navigation.js" defer></script>
-  <script src="../js/loadMatlabFile.js" defer></script>
+  <script src="../js/layout.js" ></script>
+  <script src="../js/navigation.js" ></script>
+  <script src="../js/loadMatlabFile.js" ></script>
 
 </head>
 
 <body>
 
-  <!-- ===== HEADER ===== -->
-<header class="page-header"
+  <header class="page-header"
         data-title="Chapter 3: Simple Computations Using Fourier Transforms">
 </header>
 
-  <!-- ===== Sidebar Navigation (populated by navigation.js) ===== -->
   <nav id="right_nav_box" aria-label="Chapter navigation"></nav>
 
-  <!-- ===== MAIN CONTENT ===== -->
   <main class="text">
     <h1>Unbiased Correlation of 1-D Random Processes</h1>
 
-		<p>
-		In the years since I wrote the book, I have had many occasions to use the function <span class="code">corr2_ft</span>.  Here, I provide more detail about computing the correlation of samples from a 1-D random process. This provides background for the 2-D calculation. At the end, this is illustrated with a code example.
-		</p>
+    <p>
+    In the years since I wrote the book, I have had many occasions to use the function <span class="code">corr2_ft</span>. Here, I provide more detail about computing the correlation of samples from a 1-D random process. This provides background for the 2-D calculation. At the end, this is illustrated with a code example.
+    </p>
 
-		<p>
-		Correlation is a widely used analysis tool.  Mostly, I use it for analyzing random signals that occur in optical systems that collect data through atmospheric turbulence.  For example, Section 9.5.5 in the book uses the ensemble average auto-correlation of the propagated field to verify that the turbulent wave-optics simulation exhibits the expected second-order field statistics.  Other random signals like wavefront gradients, Zernike mode coefficients, and irradiance fluctuations can be analyzed with correlation.  These can be 2-D spatial signals or 1-D temporal signals, depending on how they are measured.  As I mention in <a href="corrWindow.html">Correlation Integral with Window Functions</a>, Matlab provides the function  <span class="code">xcorr</span> to compute cross-correlations of 1-D functions.  I encourage everyone to read to the <span class="code">xcorr</span> documentation.  It is informative, particularly regarding the various normalization options.  The <span class="string">'unbiased'</span> option is particularly relevant here, and the function  <span class="code">corr2_ft</span> in Section 3.2 of the book provides an analogous calculation for removing the bias of a 2-D spatial mask that occurs often in optics.
-		</p>
-		
-		<p>
-		In this article, I first describe the calculation of unbiased correlation in 1-D.  Then, I illustrate with an example that compares the output of the <span class="code">xcorr</span> function to a correlation computed manually with <abbr title = "Fourier transforms">FTs</abbr>.
-		</p>
+    <p>
+    Correlation is a widely used analysis tool. Mostly, I use it for analyzing random signals that occur in optical systems that collect data through atmospheric turbulence. For example, Section 9.5.5 in the book uses the ensemble average auto-correlation of the propagated field to verify that the turbulent wave-optics simulation exhibits the expected second-order field statistics. Other random signals like wavefront gradients, Zernike mode coefficients, and irradiance fluctuations can be analyzed with correlation. These can be 2-D spatial signals or 1-D temporal signals, depending on how they are measured. As I mention in <a href="corrWindow.html">Correlation Integral with Window Functions</a>, Matlab provides the function <span class="code">xcorr</span> to compute cross-correlations of 1-D functions. I encourage everyone to read the <span class="code">xcorr</span> documentation. It is informative, particularly regarding the various normalization options. The <span class="string">'unbiased'</span> option is particularly relevant here, and the function <span class="code">corr2_ft</span> in Section 3.2 of the book provides an analogous calculation for removing the bias of a 2-D spatial mask that occurs often in optics.
+    </p>
+    
+    <p>
+    In this article, I first describe the calculation of unbiased correlation in 1-D. Then, I illustrate with an example that compares the output of the <span class="code">xcorr</span> function to a correlation computed manually with <abbr title = "Fourier transforms">FTs</abbr>.
+    </p>
 
         <h2>Unbiased Correlation in 1-D</h2>
-    	<p>
-		In <a href="statDefs.html">Some Statistical Definitions</a>, I write the correlation of an ergodic random process \(u\left(t\right)\) as
-		$$
-		\begin{equation}
-			\Gamma_u\left(\tau\right) = \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} u\left(t\right) u\left(t-\tau\right) \, \textrm{d}t.
-		\end{equation}
-		$$
-		In reality, we always observe the process \(u\left(t\right)\) over a finite period of time, described by a window function \(W\left(t\right)\). Accordingly, we can define a time-windowed function realization of the random process as \(u^{\prime}\left(t\right) = u\left(t\right) W\left(t\right)\). Thus, we always have the integral of the time-windowed realization
-		$$
-		\begin{equation}
-			I^{\prime}\left(\tau\right) = \int\limits_{-T/2}^{T/2} u^{\prime}\left(t\right) u^{\prime}\left(t-\tau\right) \, \textrm{d}t.
-		\end{equation}
-		$$
-		Assuming that \(T\) is longer than the window overlap, the integral can be written as
-		$$
-		\begin{equation}
-			I^{\prime}\left(\tau\right) = \int\limits_{W\left(t\right) W\left(t-\tau\right)} u\left(t\right) u\left(t-\tau\right) \, \textrm{d}t,
-		\end{equation}
-		$$
-		where the limits of integration are set by the nonzero duration of \(W\left(t\right) W\left(t-\tau\right)\). This has units of the random process squared \(\times\) time (seconds). To compute the average over the time window, we need to divide by the duration of the integration limits, which is \(\mathcal{A}\left(\tau\right)\) from Eq. (2) in <a href="corrWindow.html">Correlation Integral with Window Functions</a>. Then the best approximation to the statistical correlation that we can make from time-windowed samples is
-		$$
-		\begin{equation}
-			\Gamma_u\left(\tau\right) \simeq \left\langle \frac{I^{\prime}\left(\tau\right)} {\mathcal{A}\left(\tau\right)} \right\rangle.
-		\end{equation}
-		$$
-		In this equation, \(\left\langle \ldots \right\rangle\) still indicates an ensemble average, but not by integrating over the <abbr title = "Probability Density Function">PDF</abbr>. In this case, we have a finite collection of realizations of \(u\left(t\right)\), so we perform the integral \(I^{\prime}\left(\tau\right)\) for each realization, divide by \(\mathcal{A}\left(\tau\right)\), and average the results.
-		</p>
-		
-		<p>
-		The following code example generates random draws of time-correlated process and then computes the biased and unbiased auto-correlation of each realization and then computes the average auto-correlation. The random process is generated using the function <span class="code">ftShGaussianProc1</span> that I wrote (will post it with an explanation in the future). It uses a 1-D version of the phase-screen generation technique from my book. However in this case, it accepts a handle to a <abbr title = "Power Spectral Density">PSD</abbr> function.
-		</p>
-		
-		<p>
-		It first uses Matlab's <span class="code">xcorr</span> function with its various options. Then, it makes explicit use of the auto-correlation theorem with the <span class="code">ft</span> and <span class="code">ift</span> functions from my book. The plots demonstrate use of different normalizations with and without bias. Using the <span class="string">'unbiased'</span> option causes <span class="code">xcorr</span> to normalize by the number of samples for each lag. In the code, this is given by <span class="code">M-abs(mLags)</span>. In plot (b) of the first figure, <span class="code">xcorr</span> with the <span class="string">'none'</span> option divided by <span class="code">M</span> and <span class="code">xcorr</span> with the <span class="string">'biased'</span> option match each other, but they do not match the theoretical auto-correlation. That discrepancy is the statistical bias. The mismatch is rectified in plot (c) with the <span class="string">'unbiased'</span> option, and equivalently, <span class="code">xcorr</span> with the <span class="string">'none'</span> option divided by the number of samples <span class="code">M-abs(mLags)</span> at each lag <span class="code">m</span>. The correct match between the sample-based calculations and the theoretical auto-correlation is evident in plot (c).
-		</p>
-		
-		<p>
-		It is important to note some subtleties in doing the <abbr title = "Fourier transforms">FT</abbr> correlation properly. First, the random process <span class="code">g</span> is zero-padded before doing the <abbr title = "Fourier transform">FT</abbr> operation. Second, in the line that makes the final plot, <span class="code">corrGBig</span> is divided by the grid spacing <span class="code">M/T</span> and divided by the number of samples <span class="code">M-abs(mLagsFT)</span>. The close match between the theoretical correlation, the unbiased <span class="code">xcorr</span> calculation, and the <abbr title = "Fourier transform">FT</abbr>-based calculation is shown in the last plot.
-		</p>
+      <p>
+    In <a href="statDefs.html">Some Statistical Definitions</a>, I write the correlation of an ergodic random process \(u\left(t\right)\) as
+    $$
+    \begin{equation}
+      \Gamma_u\left(\tau\right) = \lim\limits_{T\to\infty} \frac{1}{T} \int\limits_{-T/2}^{T/2} u\left(t\right) u\left(t-\tau\right) \, \textrm{d}t.
+    \end{equation}
+    $$
+    In reality, we always observe the process \(u\left(t\right)\) over a finite period of time, described by a window function \(W\left(t\right)\). Accordingly, we can define a time-windowed function realization of the random process as \(u^{\prime}\left(t\right) = u\left(t\right) W\left(t\right)\). Thus, we always have the integral of the time-windowed realization
+    $$
+    \begin{equation}
+      I^{\prime}\left(\tau\right) = \int\limits_{-T/2}^{T/2} u^{\prime}\left(t\right) u^{\prime}\left(t-\tau\right) \, \textrm{d}t.
+    \end{equation}
+    $$
+    Assuming that \(T\) is longer than the window overlap, the integral can be written as
+    $$
+    \begin{equation}
+      I^{\prime}\left(\tau\right) = \int\limits_{W\left(t\right) W\left(t-\tau\right)} u\left(t\right) u\left(t-\tau\right) \, \textrm{d}t,
+    \end{equation}
+    $$
+    where the limits of integration are set by the nonzero duration of \(W\left(t\right) W\left(t-\tau\right)\). This has units of the random process squared \(\times\) time (seconds). To compute the average over the time window, we need to divide by the duration of the integration limits, which is \(\mathcal{A}\left(\tau\right)\) from Eq. (2) in <a href="corrWindow.html">Correlation Integral with Window Functions</a>. Then the best approximation to the statistical correlation that we can make from time-windowed samples is
+    $$
+    \begin{equation}
+      \Gamma_u\left(\tau\right) \simeq \left\langle \frac{I^{\prime}\left(\tau\right)} {\mathcal{A}\left(\tau\right)} \right\rangle.
+    \end{equation}
+    $$
+    In this equation, \(\left\langle \ldots \right\rangle\) still indicates an ensemble average. In this case, we have a finite collection of realizations of \(u\left(t\right)\), so we perform the integral \(I^{\prime}\left(\tau\right)\) for each realization, divide by \(\mathcal{A}\left(\tau\right)\), and average the results.
+    </p>
+    
+    <p>
+    The following code example generates random draws of a time-correlated process and then computes the biased and unbiased auto-correlation of each realization. The random process is generated using the function <span class="code">ftShGaussianProc1</span>, which uses spectral partitioning to ensure that the simulated variance matches the analytical Power Spectral Density (PSD) integral.
+    </p>
+
+    
+    
+    <p>
+    The code compares the output of Matlab's <span class="code">xcorr</span> function to the theoretical Gaussian covariance. Using the <span class="string">'unbiased'</span> option causes <span class="code">xcorr</span> to normalize by the number of samples for each lag, given by <span class="code">M-abs(mLags)</span>. In plot (b) of the first figure, <span class="code">xcorr</span> with the <span class="string">'none'</span> option divided by <span class="code">M</span> and the <span class="string">'biased'</span> option match each other, but they exhibit a significant roll-off compared to theory. This discrepancy is the statistical bias caused by the windowing of the data. 
+    </p>
+    
+    <p>
+    This mismatch is rectified in plot (c). By using the <span class="string">'unbiased'</span> option, the calculation correctly recovers the absolute variance at zero lag and maintains the correct correlation width. The code also demonstrates the auto-correlation theorem using the <span class="code">ft</span> and <span class="code">ift</span> functions. Note that the random process is zero-padded before the FT operation to prevent circular correlation artifacts.
+    </p>
 
     <div id="codeContainer"></div>
 
@@ -117,12 +112,11 @@
 
     <img src="checkXcorr.png" alt="Unbiased autocorrelation plots" class="article-image" />
     <div class="figure-caption">
-      Figure 1 — Unbiased autocorrelation computed from sample realizations.
+      Figure 1 — (a) A single signal realization. (b) Biased autocorrelation estimates showing the windowing roll-off. (c) The unbiased estimate correctly matching the theoretical variance and profile.
     </div>
 
   </main>
 
-  <!-- ===== FOOTER ===== -->
   <footer id="site_footer"></footer>
 
 </body>

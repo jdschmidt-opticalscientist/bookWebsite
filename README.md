@@ -4,10 +4,15 @@
 
 ### Numerical Simulation of Optical Wave Propagation with Examples in Matlab
 
-This repository hosts website content via GitHub Pages.
+This repository hosts the website content via GitHub Pages.
 
-The site is available at  
+The site is available at:  
 [schmidtwaveopticsbook.org](https://schmidtwaveopticsbook.org)
+
+## Supporting MATLAB Code
+
+The MATLAB scripts and examples discussed on the supplemental website are hosted in a separate repository:  
+[bookWebsiteMatlabCode](https://github.com/jdschmidt-opticalscientist/bookWebsiteMatlabCode)
 
 ## Reference
 

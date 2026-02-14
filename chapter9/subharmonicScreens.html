@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Subharmonics and Low-Frequency Phase Statistics | Chapter 9 Supplemental
+    </title>
+
+    <script>
+      window.MathJax = { tex: { tags: "ams" } };
+    </script>
+    <script
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.css"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-matlab.min.js"></script>
+
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/mainPage.css" />
+    <link rel="stylesheet" href="../css/article.css" />
+
+    <script src="../js/layout.js"></script>
+    <script src="../js/navigation.js"></script>
+    <script src="../js/loadMatlabFile.js"></script>
+  </head>
+
+  <body>
+    <header
+      class="page-header"
+      data-title="Chapter 9: Propagation through Atmospheric Turbulence"
+    ></header>
+    <nav id="right_nav_box" aria-label="Chapter navigation"></nav>
+
+    <main class="text">
+      <h1>Subharmonics and Low-Frequency Phase Statistics</h1>
+
+      <p>
+        As explained in Sec. 9.3 of my book, the standard Fourier Transform (FT)
+        method for generating random phase screens often fails to accurately
+        represent the large-scale statistics of atmospheric turbulence. This
+        deficiency is most apparent when examining the structure function at
+        large spatial separations. This article provides updated code to
+        generate phase screens using the
+        <span class="code">ftShGaussianProc2</span> function that is used in the
+        script <span class="code">checkXcorr2.m</span> from
+        <a href="../chapter3/corrUnbiased2D.html"
+          >Unbiased Correlation of 2-D Random Processes</a
+        >
+        and the script <span class="code">checkStrFcn2.m</span> from
+        <a href="../chapter3/strFcnUnbiased2D.html"
+          >Unbiased Structure Function of 2-D Random Processes</a
+        >.
+      </p>
+
+      <h2>The Spectral Sampling Problem</h2>
+      <p>
+        As explained in Sec. 9.3, the Fourier transform (<abbr
+          title="Fourier transform"
+          >FT</abbr
+        >) method samples the Power Spectral Density (<abbr
+          title="Power Spectral Density"
+          >PSD</abbr
+        >) on a discrete grid with a frequency spacing of \(\Delta f = 1/D\),
+        where \(D\) is the side length of the grid. Because the grid cannot
+        sample frequencies lower than \(\Delta f\), it inherently misses the
+        tilt and other low-frequency content that characterize Kolmogorov
+        turbulence. This results in an underestimation of the phase variance and
+        a structure function that "flatlines" prematurely. In beam propagation
+        simulations, the mean beam irradiance is too narrow, and the
+        scintillation variance is too low.
+      </p>
+
+      <h2>The Subharmonic Solution</h2>
+      <p>
+        To recover these missing low frequencies, we utilize the
+        <b>subharmonic method</b>. This approach samples the
+        <abbr title="Power Spectral Density">PSD</abbr> on increasingly finer
+        grids centered at the origin of the frequency plane. By partitioning the
+        spectrum and carefully avoiding double-counting the DC power, we can
+        synthesize a low-frequency screen (\(\phi_{lo}\)) to augment the
+        high-frequency <abbr title="Fourier transform">FT</abbr> screen
+        (\(\phi_{hi}\)).
+      </p>
+
+      <div id="codeContainer"></div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          // Note the "raw.githubusercontent.com" domain and the removal of "/tree/"
+          const matlabURL =
+            "https://raw.githubusercontent.com/jdschmidt-opticalscientist/bookWebsiteMatlabCode/main/examples/Chapter9/checkFTSHScreens.m";
+
+          loadMatlabFile(matlabURL, "#codeContainer");
+        });
+      </script>
+
+      <h2>Visual and Statistical Comparison</h2>
+      <p>
+        Just like Fig. 9.3, the script below demonstrates the benefit of adding
+        subharmonics to the <abbr title="Fourier transform">FT</abbr> screen. In
+        Fig. 1, the visual difference between a screen generated with only the
+        high-frequency components versus one including subharmonics is clear.
+        However, note that this implementation of the subharmonic method is not
+        perfect, but it performs much better than the
+        <abbr title="Fourier transform">FT</abbr> method alone. When I wrote the
+        book, this method provided the best combination of simplicity and
+        accuracy for instructional purposes. In the years since the book was
+        published, even more phase screen generation methods have been published
+        with a variety of benefits over both the
+        <abbr title="Fourier transform">FT</abbr> and subharmonic methods.
+      </p>
+
+      <figure>
+        <img
+          src="subharmonicRealization.png"
+          alt="Comparison of FT-only and subharmonic phase screens"
+          style="width: 100%; max-width: 1000px"
+        />
+        <figcaption>
+          <b>Figure 1:</b> Single realization comparison. The FT-only screen
+          (left) lacks the large-scale wavefront tilt that dominates real-world
+          atmospheric turbulence. The subharmonic screen (right) correctly
+          incorporates these low-frequency components.
+        </figcaption>
+      </figure>
+
+      <p>
+        Statistically, the impact is even more quantifiable. By computing the
+        <b>unbiased structure function</b>, we can compare both methods against
+        the theoretical von Karman model: $$D_\phi(r) = 6.16
+        r_0^{-5/3}\left[\frac{3}{5}\kappa_0^{-5/3} -
+        \frac{\left(r/\kappa_0/2\right)^{5/6}}{\Gamma\left(11/6\right)}
+        K_{5/6}\left(\kappa_0 r\right)\right],$$ as shown in Fig. 2.
+      </p>
+
+      <figure>
+        <img
+          src="subharmonicStrFcn.png"
+          alt="Statistical impact of subharmonics on structure function"
+          style="width: 100%; max-width: 1000px"
+        />
+        <figcaption>
+          <b>Figure 2:</b> Phase structure function comparison. In the log-log
+          plot (right), the FT-only estimate follows the \(5/3\) slope at small
+          lags but diverges rapidly as the lag \(r\) increases. The subharmonic
+          method successfully tracks the theoretical curve across the entire
+          aperture.
+        </figcaption>
+      </figure>
+
+      <p>
+        As demonstrated in Fig. 2, some kind of low-frequency addition is
+        essential for any simulation where large-scale phase effects, such as
+        beam wander or arrival-angle fluctuations, are of interest.
+      </p>
+    </main>
+
+    <footer id="site_footer"></footer>
+  </body>
+</html>

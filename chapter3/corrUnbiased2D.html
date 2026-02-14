@@ -42,7 +42,11 @@
     <h1>Unbiased Correlation of 2-D Random Processes</h1>
 
     <p>
-      While 1-D correlation is a staple of signal processing, optical systems naturally operate in two dimensions. Transitioning from 1-D temporal signals to 2-D spatial signals requires a more rigorous handling of the observation window. Building on the concepts from <a href="corrWindow.html">Correlation Integral with Window Functions</a>—specifically the final section regarding 2-D window functions—we can extend the unbiasing procedure to account for the complex geometries, such as circular apertures, commonly found in optical hardware.
+      While 1-D correlation is a staple of signal processing, optical systems naturally operate in two dimensions. There are several second-order statistics that can be computed, like the power spectral density (<abbr title="Power Spectral Density">PSD</abbr>), correlation, and structure function. The standard method for removing the bias from a computed <abbr title="Power Spectral Density">PSD</abbr> is called <dfn>Welch's method</dfn>, available in Matlab via the <a href="https://www.mathworks.com/help/signal/ref/pwelch.html">pwelch function</a>. To be effective, it requires many more samples than are typically available in 2-D spatial signals from wavefront sensors and cameras. Accordingly, we more frequently utilize spatial statistics like the correlation and structure function, which can be accurately unbiased even with a limited number of spatial samples.
+    </p>
+      
+    <p>
+      Transitioning from 1-D temporal signals to 2-D spatial signals requires a rigorous handling of the observation window to remove bias. Building on the concepts from <a href="corrWindow.html">Correlation Integral with Window Functions</a>—specifically the final section regarding 2-D window functions—we can extend the unbiasing procedure to account for the complex geometries, such as circular apertures, commonly found in optical hardware.
     </p>
 
     <p>

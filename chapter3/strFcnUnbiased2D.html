@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Unbiased Structure Function of 2-D Random Processes | Chapter 3
+      Supplemental
+    </title>
+
+    <script>
+      window.MathJax = { tex: { tags: "ams" } };
+    </script>
+    <script
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.css"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-matlab.min.js"></script>
+
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/mainPage.css" />
+    <link rel="stylesheet" href="../css/article.css" />
+
+    <script src="../js/layout.js"></script>
+    <script src="../js/navigation.js"></script>
+    <script src="../js/loadMatlabFile.js"></script>
+  </head>
+
+  <body>
+    <header
+      class="page-header"
+      data-title="Chapter 3: Simple Computations Using Fourier Transforms"
+    ></header>
+    <nav id="right_nav_box" aria-label="Chapter navigation"></nav>
+
+    <main class="text">
+      <h1>Unbiased Structure Function of 2-D Random Processes</h1>
+
+      <p>
+        The structure function, \(D_u(\Delta\mathbf{r})\), is an important
+        statistic in optical turbulence because the mean of the process may be
+        non-stationary while the increments remain stationary. Various phenomena
+        in optical turbulence are computed as differential variances, often
+        arising from anisoplanatic geometries. These occur in situations where
+        the field of view is larger than the isoplanatic angle (\theta_0) or
+        when using artificial beacons for adaptive optics.
+      </p>
+
+      <p>
+        Structure functions are especially useful for verifying wave-optics
+        simulations and experimental turbulent wavefront data. There are two
+        main reasons for this: 1) the theoretical "wave structure function"
+        maintains the same form in both weak and strong turbulence, and 2) it is
+        more numerically stable for computing statistics when the variance is
+        very large, such as in Kolmogorov turbulence. This is why Listing 9.4 in
+        my book utilizes the structure function for verification.
+      </p>
+
+      <p>
+        As mentioned in
+        <a href="statDefs.html">Some Statistical Definitions</a>, the structure
+        function has a close relationship with correlation. Consequently,
+        calculating either from experimental or simulated data requires an
+        unbiased estimator, similar to the approach in
+        <a href="corrUnbiased2D.html"
+          >Unbiased Correlation of 2-D Random Processes</a
+        >. This article describes how to remove the bias imposed by the geometry
+        of the observation window. The process is very similar to that for
+        correlation, and while the topic is introduced in the book, I provide a
+        more detailed treatment here.
+      </p>
+
+      <h2>Relationship to Covariance</h2>
+      <p>
+        As a reminder, for a stationary random process, the structure function
+        is related to the covariance \(\Gamma_u(\Delta\mathbf{r})\) by the
+        identity: $$ \begin{equation} D_u(\Delta\mathbf{r}) = 2 \left[
+        \Gamma_u(\mathbf{0}) - \Gamma_u(\Delta\mathbf{r}) \right] \end{equation}
+        $$ As the spatial lag \(\Delta\mathbf{r}\) increases,
+        \(\Gamma_u(\Delta\mathbf{r})\) typically decays to zero, meaning the
+        structure function should converge to \(2\sigma^2\) (twice the
+        variance). However, without proper unbiasing, the windowing effect
+        causes the estimate to deviate dramatically from this theoretical limit
+        at large separations.
+      </p>
+
+      <h2>The Unbiasing Procedure</h2>
+      <p>
+        In <span class="code">str_fcn2_ft.m</span>, we implement an efficient
+        Fourier-based calculation that accounts for the mask. By dividing the
+        raw structure function numerator by the mask's autocorrelation (the area
+        of overlap), we ensure that the statistical estimate remains accurate
+        even at the edges of the aperture where fewer pixel pairs are available
+        for averaging. Refer to
+        <a
+          href="https://github.com/jdschmidt-opticalscientist/bookWebsiteMatlabCode"
+          >my Matlab GitLab</a
+        >
+        for a newer version of <span class="code">str_fcn2_ft.m</span> than the
+        one in Listing 3.7 of my book.
+      </p>
+
+      <div id="codeContainer"></div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          loadMatlabFile(
+            "https://raw.githubusercontent.com/jdschmidt-opticalscientist/bookWebsiteMatlabCode/main/examples/Chapter3/basicCorrelation/checkStrFcn2.m",
+            "#codeContainer",
+          );
+        });
+      </script>
+
+      <h2>Numerical Verification</h2>
+      <p>
+        The script <span class="code">checkStrFcn2.m</span> compares the direct
+        structure function calculation against the theoretical Gaussian model
+        and a derived version using the unbiased covariance.
+      </p>
+
+      <img
+        src="checkStrFcn2D_Results.png"
+        alt="2-D realization and radial average verification"
+        class="article-image"
+      />
+      <div class="figure-caption">
+        Figure 1 — Radial average of the structure function for a Gaussian
+        process. The <b>Biased D</b> curve shows a significant roll-off at large
+        separations, failing to reach the expected \(2\sigma^2\) limit. The
+        <b>Unbiased</b> versions correctly track the theoretical curve.
+      </div>
+
+      <p>
+        As seen in Figure 1, the <b>Biased D</b> curve (green) fails to capture
+        the true statistics of the process as the lag increases. Because the
+        denominator is missing, the energy is attenuated by the decreasing area
+        of overlap. This leads to a dramatic underestimation of the phase
+        variance over large apertures. By contrast, the
+        <b>Direct Unbiased D</b> (red) and the version derived from the
+        <b>Unbiased Correlation</b> (blue) match the theory perfectly, proving
+        that the unbiasing logic is consistent across both second-order
+        statistical measures.
+      </p>
+
+      <p>
+        Properly unbiasing the structure function is a critical step in
+        verifying simulation tools, such as atmospheric phase screen generators
+        (both numerical and experimental), to ensure that the simulated
+        turbulence exhibits the correct spatial correlation and total power.
+      </p>
+    </main>
+
+    <footer id="site_footer"></footer>
+  </body>
+</html>

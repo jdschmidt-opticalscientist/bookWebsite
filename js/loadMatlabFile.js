@@ -4,23 +4,37 @@
    with line numbers and toolbar.
    ========================================================== */
 
-async function loadMatlabFile(path, containerSelector) {
+async function loadMatlabFile(path, containerSelector, startLine = null, endLine = null) {
   try {
     await ensurePrismReady();
 
     const resp = await fetch(path);
     if (!resp.ok) throw new Error(resp.statusText);
 
-    // --- Decode explicitly as UTF-8 ---
     const buffer = await resp.arrayBuffer();
     let text = new TextDecoder("utf-8").decode(buffer);
 
-    // --- Normalize line endings for Prism ---
+    // --- Normalize line endings ---
     text = text.replace(/\r\n?/g, "\n");
+
+    // --- NEW: Line Slicing Logic ---
+    if (startLine !== null || endLine !== null) {
+      const lines = text.split("\n");
+      // Use logical defaults if one is missing (1 to the end)
+      const start = startLine ? startLine - 1 : 0;
+      const end = endLine ? endLine : lines.length;
+      
+      text = lines.slice(start, end).join("\n");
+    }
 
     // --- Build code block ---
     const pre = document.createElement("pre");
     pre.className = "line-numbers codeinput";
+
+    // NEW: Tell Prism where to start counting
+    if (startLine) {
+      pre.setAttribute("data-start", startLine);
+    }
 
     const code = document.createElement("code");
     code.className = "language-matlab";
@@ -28,15 +42,12 @@ async function loadMatlabFile(path, containerSelector) {
 
     pre.appendChild(code);
 
-    // Insert into page
     const container = document.querySelector(containerSelector);
     if (!container) throw new Error("Container not found: " + containerSelector);
     container.appendChild(pre);
 
-    // Highlight once layout is stable
     requestAnimationFrame(() => {
       Prism.highlightElement(code);
-
       if (Prism.plugins.lineNumbers) {
         Prism.hooks.run("complete", { element: code });
       }

@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time-Evolving Phase Screens | Chapter 9 Supplemental</title>
+
+    <script>
+      window.MathJax = { tex: { tags: "ams" } };
+    </script>
+    <script
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.css"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-matlab.min.js"></script>
+
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/mainPage.css" />
+    <link rel="stylesheet" href="../css/article.css" />
+
+    <script src="../js/layout.js"></script>
+    <script src="../js/navigation.js"></script>
+    <script src="../js/loadMatlabFile.js"></script>
+  </head>
+
+  <body>
+    <header
+      class="page-header"
+      data-title="Chapter 9: Propagation through Atmospheric Turbulence"
+    ></header>
+    <nav id="right_nav_box" aria-label="Chapter navigation"></nav>
+
+    <main class="text">
+      <h1>Time-Evolving Phase Screens</h1>
+      <p>
+        My book does not cover time-evolving simulations, so I cover it in this
+        article. It is an important technique to master to add more realism,
+        especially for applications like longe-range video imagery, lidar,
+        signal fades in free-space laser communications, and adapive optics. The
+        first to cover is generating phase screens that evolve in time. When the
+        beam propagates through them, it changes over time. The most common
+        approach is the
+        <dfn>Taylor Frozen Flow hypothesis</dfn>, which assumes that turbulent
+        eddies remain "frozen" within a layer and are simply translated across
+        the beam path by the transverse wind vector \(\mathbf{v}\), as shown in
+        the Figure 1 video.
+      </p>
+
+      <div style="text-align: center; margin: 30px 0">
+        <video
+          width="100%"
+          style="max-width: 600px; border: 1px solid #ddd; border-radius: 4px"
+          autoplay
+          loop
+          muted
+          playsinline
+          controls
+        >
+          <source src="turbulence_evolution.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <p>
+          <em
+            >Figure 1: Time evolution of a phase screen using the Modified von
+            Kármán PSD (\(\mathbf{v} = [1.5, 0.3]\) m/s).</em
+          >
+        </p>
+      </div>
+
+      <p>
+        Keep in mind that Taylor frozen flow is just an approximation, although
+        one that is used very often in turbulent propagation simulations. Real
+        turbulence translates over time as eddies convect, but they also eddies
+        crash into each other and change size over time. The changing of optical
+        phase in-place is often called "boiling". There are phase screen
+        generation methods in literature that account for this.
+      </p>
+
+      <h2>The Fourier Shift Theorem</h2>
+      <p>
+        A conceptually simple way to shift a screen over time is to make it
+        larger than the propagation grid, crop it to that size, and move the
+        cropping window through the screen over time by a distance
+        \(\mathbf{r}=\mathbf{v}\Delta t\). The drawback is that the screen can
+        only move by an integer number of grid points per time step. To remedy
+        this, we can get a little more sophisticated and interpolate the screen
+        onto a new grid that is shifted by an arbirary distance. It works fine,
+        but this article takes another approach by using the
+        <dfn>Fourier Shift Theorem</dfn>. According to this, a spatial
+        displacement in the spatial domain is equivalent to a linear phase
+        rotation in the frequency domain such that
+      </p>
+      <p style="text-align: center">
+        $$ \begin{equation} \phi(\mathbf{r} - \mathbf{v}\Delta t) \iff
+        \Phi(\mathbf{f}) \cdot \exp(-i 2\pi \mathbf{f} \cdot \mathbf{v}t).
+        \end{equation} $$
+      </p>
+      <p>
+        To accomplish this, we separate the phase screen generation process from
+        <code>ftShGaussianProc2</code> into two separate parts as two new
+        functions:
+      </p>
+      <ol>
+        <li>
+          <dfn>Initialization:</dfn> The function
+          <code>ftShGaussianProc2Coeffs</code> generates the random draws of the
+          Fourier coefficients Generate the random complex Fourier coefficients
+          (\(c_n\)) and stores them in a struct. This defines the screen over
+          all space.
+        </li>
+        <li>
+          <dfn>Synthesis:</dfn> For every time step \(t\), we call
+          <code>ftShGaussianProc2Evolving</code>, which applies the linear phase
+          to the coefficients before synthesizing the screeen before performing
+          the inverse transform to the spatial domain.
+        </li>
+      </ol>
+
+      <h2>Periodicity and Grid Wrap-Around</h2>
+      <p>
+        Inherently, all finite Fourier series are periodic. In the case of
+        subharmonic screens, the series comprises two separte groups of terms,
+        one from the <abbr title="Discrete Fourier Transform">DFT</abbr>, and
+        the other from the subharmonics. In the
+        <abbr title="Discrete Fourier Transform">DFT</abbr> part, the range of
+        spatial frequencies in one dimension is \([-1/(2 \Delta x), (N/2-1)/(N
+        \cdot \Delta x)]\) in increments of \(1/(N \Delta x)\). Note that the
+        lower bound is exactly the negative of the Nyquist frequeny.
+        Accordingly, the shortest spatial period is \(2 \Delta x\), while the
+        longest is \(N \Delta x\). It spans the fundamental tone (one period on
+        the grid) up to Nyquist. The entire
+        <abbr title="Discrete Fourier Transform">DFT</abbr> part repeats when it
+        has shifted by a distance equal to the longest period, \(N \Delta x\).
+        If the shift velocity in the \(x\) direction is \(v_x\), that portion of
+        the screen repeats after a time equal to \(N \Delta x/v_x\).
+      </p>
+      <p>
+        My subharmonic uses three levels of frequency grids, each at spatial
+        frequency increment of \(1/(3^p N \Delta x)\) with \(p = 1, 2, 3\). The
+        largest period on each subharmonic grid level is \(3^p N \Delta x\).
+        Thus, the largest of all periods, when \(p=3\), is \(27 N \Delta x\),
+        and the entire screen repeats itself after a simulation time of \(27 N
+        \Delta x/v_x\).
+      </p>
+      <p>
+        Small-frequency (fine spatial scale) details from the the
+        <abbr title="Discrete Fourier Transform">DFT</abbr> portion repeat every
+        \(N \Delta x/v_x\), while the whole screen takes \(27\times\) longer.
+        When propagating a beam through a single-screen simulation, the
+        scintillation pattern will repeat much more often than the beam wander.
+        However, when using multiple screens in a simulation, the first screen's
+        tilt affects where the beam hits the second screen, and so on. Plus, the
+        transverse velocities may be different in a realistic simulation, so the
+        period of a multi-screen simulation can be very long.
+      </p>
+
+      <h2>Time-Evolving Phase Screen Generation Code</h2>
+      <p>
+        The following functions implement the two-step phase screen geneeration.
+        The function <code>ftShGaussianProc2Coeffs</code> returns a struct
+        <code>coeffs</code> that contains the frequency grid and Fourier
+        coefficients for both the
+        <abbr title="Discrete Fourier Transform">DFT</abbr> and subharmonic
+        portions. Then, this struct is an input to the function
+        <code>ftShGaussianProc2Evolving</code> that synthesizes the
+        <abbr title="Discrete Fourier Transform">DFT</abbr> and subharmonic
+        portions separately. Lines 24-25 apply the linear phase shift to the
+        <abbr title="Discrete Fourier Transform">DFT</abbr> coefficients, while
+        lines 41-42 apply it to the subharmonic coefficients. Finally, it
+        returns the sum of the two as the full phase screen at the given time
+        step.
+      </p>
+
+      <div id="codeContainer1"></div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          loadMatlabFile(
+            "https://raw.githubusercontent.com/jdschmidt-opticalscientist/bookWebsiteMatlabCode/main/lib/ftShGaussianProc2Coeffs.m",
+            "#codeContainer1",
+          );
+        });
+      </script>
+
+      <div id="codeContainer2"></div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          loadMatlabFile(
+            "https://raw.githubusercontent.com/jdschmidt-opticalscientist/bookWebsiteMatlabCode/main/lib/ftShGaussianProc2Evolving.m",
+            "#codeContainer2",
+          );
+        });
+      </script>
+
+      <h2>Best Practices for Time-Evolving Simulations</h2>
+      <p>
+        The <dfn>Greenwood frequency</dfn> \(f_G\) is the standard quantity that
+        characterizes how fast turbulence evolves. It relates to how well an
+        adaptive optics system can keep up with turbulence, but it is used often
+        to characterize the turbulence itself. For a single screen, it is given
+        by $$ \begin{equation} f_G = 0.427 \frac{v}{r_0}. \end{equation} $$ If
+        the simulation is intended for use with adaptive optics, the time step
+        \(\Delta t\) should be \(< 1/(10 f_G)\), maybe even faster.
+      </p>
+
+      <p>
+        The Fourier shift theorem handles shifts less than one grid point, but
+        if the shift is large enough that \(v\Delta t > \Delta x\), high
+        temporal frequencies can become aliased. Generally, the time step and
+        grid spacing should be set so that \(v\Delta t < \Delta x\). To choose
+        these values in a more detailed way, check temporal
+        <abbr title="Power Spectral Densities">PSDs</abbr> of quantities like
+        phase and scintillation.
+      </p>
+
+      <p>
+        Periodicity can be exploited to produce a simulation that never repeats.
+        If there are multiple phase screens, and the translation velocities are
+        not integer multiplers of each other, the beat frequency for the
+        wrap-around between all the translating grids results in a propagated
+        beam whose characteristics are unique for a very long time.
+      </p>
+
+      <h2>Verifying Temporal Statistics</h2>
+      <p>
+        To verify the simulation, we compute the
+        <dfn>Temporal Structure Function</dfn>, \(D_{\phi}(\tau) = \langle
+        |\phi(t + \tau) - \phi(t)|^2 \rangle\). Under the frozen flow
+        assumption, the temporal statistics should perfectly mirror the spatial
+        statistics at a separation \(\rho = v\tau\). The code example below sets
+        up the phase screens, using the Greenwood frequency and shift distance
+        as guidelines for the sample period. Then, it loops over just five
+        random draws of screens, each with 40 time steps. For each random draw
+        and each grid point, it computes the temporal phase structure function.
+        The structure function is averaged over all the realizations and grid
+        points.
+      </p>
+
+      <p>
+        Lines 61-65 use numerical integration to compute temporal phase
+        structure function from the phase
+        <abbr title="Power Spectral Densities">PSDs</abbr>. There are analytic
+        solutions for the Kolmogorov, Tatarskii, von Karman, and modified von
+        Karman models. The first three are fairly simple expressions. However,
+        the last one, with nonzero inner scale and finite outer scale requires
+        an advanced Mellin convolution technique to evaluate analytically. This
+        is covered in Sasiela's book in Eqs. (11-44)-(11.46). For simplicity, I
+        use the numerical integral. Finally, the Kolmogorov and modfied von
+        Karman models are plotted with the simulated temporal structure
+        function, which is shown in Fig. 2. The close match between the von
+        Karman model and the simulation indicates that phase screens have been
+        generated with the correct second-order statistics. Additionally, it
+        computes the coherence time from the screens's structure function and
+        compares to those from the Kolmogorov and modified von Karman models.
+      </p>
+
+      <div id="codeContainer3"></div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          loadMatlabFile(
+            "https://raw.githubusercontent.com/jdschmidt-opticalscientist/bookWebsiteMatlabCode/main/examples/Chapter9/verifyTemporalPhaseScreen.m",
+            "#codeContainer3",
+          );
+        });
+      </script>
+
+      <div style="text-align: center; margin: 20px 0">
+        <img
+          src="temporal_structure_function.png"
+          alt="Temporal Structure Function Plot"
+          style="max-width: 500px; width: 100%"
+        />
+        <p>
+          <em
+            >Figure 2: Ensemble-averaged temporal structure function comparing
+            simulation to Modified von Kármán theory.</em
+          >
+        </p>
+      </div>
+      <h2>References</h2>
+      <ol>
+        <li>
+          Richard J. Saisela,
+          <u
+            >Electromagnetic Wave Propagation in Turbulence: Evaluation and
+            Application of Mellin Transforms</u
+          >, 2nd Ed., SPIE Press, Bellingham, WA (2007).
+        </li>
+      </ol>
+    </main>
+
+    <footer id="site_footer"></footer>
+  </body>
+</html>

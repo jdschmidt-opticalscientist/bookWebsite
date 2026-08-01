@@ -40,7 +40,7 @@ a:hover {
   text-align: center;
   padding: 2em 0 1em 0;
   /* Responsive reserved header height to avoid CLS without creating excessive gap */
-  min-height: clamp(160px, 30vh, 500px); /* scales between 160px and 500px based on viewport height */
+  min-height: clamp(0px, 10vh, 300px); /* smaller responsive reserve to avoid CLS while keeping minimal gap */
   box-sizing: border-box;
 }
 

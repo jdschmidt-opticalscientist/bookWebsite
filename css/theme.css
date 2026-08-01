@@ -39,7 +39,8 @@ a:hover {
   background: radial-gradient(circle at top center, #1C1F54 0%, #0A0C3A 80%);
   text-align: center;
   padding: 2em 0 1em 0;
-  min-height: 500px; /* reserve space to prevent layout shifts before partials load (increased to match observed header height) */
+  /* Responsive reserved header height to avoid CLS without creating excessive gap */
+  min-height: clamp(160px, 30vh, 500px); /* scales between 160px and 500px based on viewport height */
   box-sizing: border-box;
 }
 

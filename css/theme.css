@@ -132,7 +132,8 @@ footer nav a:hover {
 
 /* ===== Sidebar Navigation Links ===== */
 #right_nav_box a {
-  color: var(--accent-light);
+  /* Use stronger gold accent for links so they contrast better against the dark background */
+  color: var(--accent-color);
   text-decoration: none;
   display: block;
   padding: 0.2em 0.4em;
@@ -140,23 +141,23 @@ footer nav a:hover {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Hover: slightly brighter gold text and faint background */
+/* Hover: subtle translucent gold background */
 #right_nav_box a:hover {
   color: var(--accent-color);
-  background-color: rgba(255, 210, 95, 0.1);
+  background-color: rgba(255, 179, 0, 0.08); /* accent-color rgb(255,179,0) */
 }
 
-/* Active (current page): subtle gold glow */
+/* Active (current page): use gold background with dark primary text for good contrast */
 #right_nav_box a.active {
-  background-color: rgba(255, 210, 95, 0.15);
-  color: var(--accent-light);
+  background-color: var(--accent-color);
+  color: var(--primary-color);
   font-weight: 600;
 }
 
-/* When hovering the active item: brighten the text, keep the glow */
+/* When hovering the active item: slightly darken the background */
 #right_nav_box a.active:hover {
-  background-color: rgba(255, 210, 95, 0.2);
-  color: var(--accent-color);
+  background-color: rgba(255, 179, 0, 0.9);
+  color: var(--primary-color);
 }
 
 /* ===== NEW: Content Container Rules ===== */

@@ -30,6 +30,9 @@ if (subtitleEl && subtitle) subtitleEl.textContent = subtitle;
 if (authorEl && author) authorEl.textContent = author;
 if (taglineEl && tagline) taglineEl.textContent = tagline;
 
+// Mark header as loaded to reveal the injected content without layout shift
+header.classList.add('loaded');
+
 }
 
 document.addEventListener("DOMContentLoaded", loadLayout);

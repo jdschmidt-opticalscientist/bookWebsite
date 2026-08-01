@@ -39,6 +39,8 @@ a:hover {
   background: radial-gradient(circle at top center, #1C1F54 0%, #0A0C3A 80%);
   text-align: center;
   padding: 2em 0 1em 0;
+  min-height: 160px; /* reserve space to prevent layout shifts before partials load */
+  box-sizing: border-box;
 }
 
 .header-content {
@@ -50,6 +52,15 @@ a:hover {
   max-width: var(--content-max-width);
   margin: 0 auto;
   padding: 0 1.5em;
+
+  /* Start hidden to avoid a visible content pop-in; reveal when JS has injected content */
+  opacity: 0;
+  transition: opacity 240ms ease-in;
+}
+
+/* When layout.js finishes injecting, it adds .loaded to the header to fade content in */
+.page-header.loaded .header-content {
+  opacity: 1;
 }
 
 .header-text h1 {

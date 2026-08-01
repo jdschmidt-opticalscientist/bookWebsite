@@ -144,7 +144,8 @@ footer nav a:hover {
 /* Hover: subtle translucent gold background */
 #right_nav_box a:hover {
   color: var(--accent-color);
-  background-color: rgba(255, 179, 0, 0.08); /* accent-color rgb(255,179,0) */
+  background-color: rgba(255, 179, 0, 0.18); /* stronger hover for better visibility */
+  font-weight: 700;
 }
 
 /* Active (current page): use gold background with dark primary text for good contrast */

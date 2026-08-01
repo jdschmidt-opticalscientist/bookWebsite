@@ -58,11 +58,11 @@ jobs:
 
       - name: Run Lighthouse (mobile)
         run: |
-          lighthouse http://localhost:8080/index.html --output=json --output-path=./lighthouse-mobile.json --emulated-form-factor=mobile --only-categories=performance,accessibility,seo --chrome-flags="--no-sandbox"
+          lighthouse http://localhost:8080/index.html --output=json --output-path=./lighthouse-mobile.json --emulated-form-factor=mobile --only-categories=performance,accessibility,seo --chrome-flags="--no-sandbox --headless=new --disable-gpu"
 
       - name: Run Lighthouse (desktop)
         run: |
-          lighthouse http://localhost:8080/index.html --output=json --output-path=./lighthouse-desktop.json --emulated-form-factor=desktop --only-categories=performance,accessibility,seo --chrome-flags="--no-sandbox"
+          lighthouse http://localhost:8080/index.html --output=json --output-path=./lighthouse-desktop.json --emulated-form-factor=desktop --only-categories=performance,accessibility,seo --chrome-flags="--no-sandbox --headless=new --disable-gpu"
 
       - name: Upload Lighthouse reports
         uses: actions/upload-artifact@v4

@@ -10,9 +10,17 @@ main.text {
   color: #000;
   border-radius: 8px;
   padding: 1.5em;
-  margin: 2em auto;
+  margin: 2em auto; /* center by default; explicit margin-right applied on wide screens */
   max-width: 900px;
   line-height: 1.6;
+}
+
+/* Ensure main content clears the right sidebar on larger viewports. */
+@media (min-width: 769px) {
+  main.text {
+    margin-right: calc(var(--sidebar-width) + 3em); /* keeps content clear of #right_nav_box */
+    max-width: var(--content-max-width);
+  }
 }
 
 /* ===== Table of Contents ===== */

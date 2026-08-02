@@ -40,3 +40,34 @@ jobs:
           # bundle exec jekyll build 
           # If it's just plain HTML/CSS, this step can just be a confirmation.
           echo "Build successful."
+
+      # 4. Lighthouse accessibility/responsive checks (runs in GitHub Actions)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install test tools
+        run: |
+          npm install -g http-server lighthouse
+
+      - name: Start local server
+        run: |
+          npx http-server ./ -p 8080 &
+          sleep 3
+
+      - name: Run Lighthouse (mobile)
+        run: |
+          lighthouse http://localhost:8080/index.html --output=json --output-path=./lighthouse-mobile.json --emulated-form-factor=mobile --only-categories=performance,accessibility,seo --chrome-flags="--no-sandbox --headless=new --disable-gpu"
+
+      - name: Run Lighthouse (desktop)
+        run: |
+          lighthouse http://localhost:8080/index.html --output=json --output-path=./lighthouse-desktop.json --emulated-form-factor=desktop --only-categories=performance,accessibility,seo --chrome-flags="--no-sandbox --headless=new --disable-gpu"
+
+      - name: Upload Lighthouse reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: |
+            ./lighthouse-mobile.json
+            ./lighthouse-desktop.json
